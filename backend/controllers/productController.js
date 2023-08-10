@@ -53,21 +53,37 @@ const viewAllProducts=expressAsyncHandler(async(req,res)=>{
 }   )
 
 const findProductsByName=expressAsyncHandler(async(req,res)=>{
-    const keyword=req.query.search
-    ?{
-        title:{
-            $regex:req.query.search,
-            $options:"i"
-        }
+    const keyword = req.query.search || ''; // Set an empty string as default
+  const products = await Product.find({
+    title: {
+      $regex: keyword,
+      $options: 'i',
+    },
+  });
+
+  if (products.length > 0) {
+    // Update the user's searchedProducts array with the new keyword
+    try {
+      const user = await User.findById(req.user._id);
+
+      if (!user) {
+        res.status(400);
+        throw new Error('User not found');
+      }
+
+      if (!user.searchedProducts.includes(keyword)) {
+        user.searchedProducts.push(keyword);
+        await user.save();
+      }
+    } catch (error) {
+      // Handle error updating user's searchedProducts
+      console.error('Error updating user searchedProducts:', error);
     }
-    :{}
-    const products=await Product.find({...keyword})
-    if(products){
-        res.json(products)
-    }else{
-        res.status(404)
-        throw new Error("No products found")
-    }
+
+    res.json(products);
+  } else {
+    res.status(404).json({ message: 'No products found' });
+  }
 })
 
 
