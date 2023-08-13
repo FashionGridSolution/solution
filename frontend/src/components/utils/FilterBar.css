@@ -1,0 +1,148 @@
+
+#filterbar {
+    width: 30%;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 15px;
+    float: left;
+    text-align: left;
+        box-sizing: border-box;
+        font-family: 'Poppins', sans-serif;
+}
+.box {
+    padding: 10px;
+}
+.border-bottom {
+    border-bottom: 1px solid #dee2e6!important;
+}
+
+.box-label{
+    color: #11698e;
+    font-size: 0.9rem;
+    font-weight: 800;
+}
+
+#inner-box, #inner-box2 {
+    height: 150px;
+    overflow-y: scroll;
+}
+
+.tick{
+    display: block;
+    position: relative;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+input[type=checkbox], input[type=radio] {
+    box-sizing: border-box;
+    padding: 0;
+}
+
+.tick input:checked~.check {
+    background-color: #ffffff;
+}
+.tick:hover input~.check {
+    background-color: #f3f3f3;
+}
+.check {
+    position: absolute;
+    top: 1px;
+    left: 0;
+    height: 18px;
+    width: 18px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+}
+button, input {
+    overflow: visible;
+}
+button, input, optgroup, select, textarea {
+    margin: 0;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+}
+
+.fa, .fas {
+    font-weight: 900;
+}
+.fa, .far, .fas {
+    font-family: "Font Awesome 5 Free";
+}
+.fa, .fab, .fal, .far, .fas {
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    line-height: 1;
+}
+
+#filterbar .btn.btn-success:hover {
+    background-color: #aff1e1;
+    color: #444;
+}
+#filterbar .btn.btn-success {
+    background-color: #ddd;
+    color: #333;
+    border: none;
+    width: 115px;
+}
+.btn-group>.btn-group:not(:last-child)>.btn, .btn-group>.btn:not(:last-child):not(.dropdown-toggle) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+.btn-group>.btn:first-child {
+    margin-left: 0;
+}
+.btn-group-vertical>.btn:hover, .btn-group>.btn:hover {
+    z-index: 1;
+}
+.btn:not(:disabled):not(.disabled) {
+    cursor: pointer;
+}
+.btn-group-vertical>.btn, .btn-group>.btn {
+    position: relative;
+    -webkit-box-flex: 0;
+    -ms-flex: 0 1 auto;
+    flex: 0 1 auto;
+}
+.btn-success:hover {
+    color: #fff;
+    background-color: #218838;
+    border-color: #1e7e34;
+}
+.btn:focus, .btn:hover {
+    text-decoration: none;
+}
+.btn-success {
+    color: #fff;
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+#filterbar input[type="radio"] {
+    visibility: hidden;
+}
+input[type=checkbox], input[type=radio] {
+    box-sizing: border-box;
+    padding: 0;
+}
+.form-check-input {
+    position: absolute;
+    margin-top: .3rem;
+    margin-left: -1.25rem;
+}
+button, input {
+    overflow: visible;
+}
+button, input, optgroup, select, textarea {
+    margin: 0;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+}

@@ -2,8 +2,8 @@ const User = require('../models/userModel');
 const generateToken = require('../config/generateToken');
 const expressAsyncHandler = require('express-async-handler');
 const registerUser = expressAsyncHandler(async (req, res) => {
-    const { name, email, password, pic } = req.body;
-    if (!name || !email || !password) {
+    const { name, email, password,gender,age,city,chestSize,hipSize,footSize,pic } = req.body;
+    if (!name || !email || !password || !gender || !age || !city || !chestSize || !hipSize || !footSize) {
         res.status(400);
         throw new Error("Please fill out all the fields");
     }
@@ -16,6 +16,12 @@ const registerUser = expressAsyncHandler(async (req, res) => {
         name,
         email,
         password,
+        gender,
+        age,
+        city,
+        chestSize,
+        hipSize,
+        footSize,
         pic
     })
     if (user) {
@@ -25,6 +31,12 @@ const registerUser = expressAsyncHandler(async (req, res) => {
             email: user.email,
             isAdmin: user.isAdmin,
             pic: user.pic,
+            gender:user.gender,
+            city:user.city,
+            age:user.age,
+            chestSize:user.chestSize,
+            hipSize:user.hipSize,
+            footSize:user.footSize,
             token: generateToken(user._id)
         })
     } else {
@@ -45,6 +57,12 @@ const authUser = expressAsyncHandler(async (req, res) => {
             email: user.email,
             isAdmin: user.isAdmin,
             pic: user.pic,
+            gender:user.gender,
+            city:user.city,
+            age:user.age,
+            chestSize:user.chestSize,
+            hipSize:user.hipSize,
+            footSize:user.footSize,
             token: generateToken(user._id),
         });
     } else {

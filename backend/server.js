@@ -5,8 +5,12 @@ const port=process.env.PORT || 8080
 const userRoutes=require('./routes/userRoutes')
 const productRoutes=require('./routes/productRoutes')
 const connectDB=require('./config/db');
+const cors = require('cors');
 connectDB();
-
+const allowedOrigins = ['http://localhost:3000']; 
+app.use(cors({
+  origin: allowedOrigins,
+}));
 //resolve routes here
 
 //api/v1

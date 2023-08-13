@@ -1,0 +1,10 @@
+.btnhide{
+    height: inherit;
+    background-color: #ff935d;
+    color: #fff;
+    font-size: 0.82rem;
+    padding-left: 40px;
+    padding-right: 40px;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
