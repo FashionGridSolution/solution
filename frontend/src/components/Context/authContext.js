@@ -1,10 +1,10 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+const AuthContext = createContext();
 
-const ChatContext = createContext();
-const SuperProvider = ({children}) => {
-    const [user, setUser] = useState();
-    const navigate = useNavigate();
+const AuthProvider=({ children })=> {
+  const [user, setUser] = useState();
+  const navigate = useNavigate();
     useEffect(() => {
         const userInfo = JSON.parse(localStorage.getItem("userInfo"));
         setUser(userInfo);
@@ -12,16 +12,16 @@ const SuperProvider = ({children}) => {
         // if (!userInfo) navigate("/");
         // eslint-disable-next-line react-hooks/exhaustive-deps
       }, [navigate]);
-      return (
-        <ChatContext.Provider
-          value={{
-            user,
-            setUser
-          }}
-        >
-          {children}
-        </ChatContext.Provider>
-      );
+
+  return (
+    <AuthContext.Provider value={{ user, setUser,  }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
-export default SuperProvider
+export const AuthState = () => {
+    return useContext(AuthContext);
+  };
+
+export default AuthProvider;

@@ -62,7 +62,7 @@ function Login() {
     
     console.log(formData);
     try {
-      const { data } = await axios.post("http://127.0.0.1:8080/api/user/", formData);
+      const { data } = await axios.post("/api/user/", formData);
       console.log(data);
       localStorage.setItem("userInfo", JSON.stringify(data));
       navigate('/')
@@ -92,7 +92,7 @@ function Login() {
     }
     
     try {
-      const { data } = await axios.post("http://127.0.0.1:8080/api/user/login", formData);
+      const { data } = await axios.post("/api/user/login", loginFormData);
       console.log(data);
       localStorage.setItem("userInfo", JSON.stringify(data));
       navigate('/')
@@ -321,7 +321,7 @@ function Login() {
                         className="form-control"
                         placeholder="Password"
                         required=""
-                        NAME="password"
+                        name="password"
                         onChange={handleLoginChange}
                       />
                     </div>
