@@ -62,16 +62,14 @@
 .col-2, .col{
     padding: 0 1vh;
 }
-a{
+.a{
     padding: 0 1vh;
 }
 .close{
     margin-left: auto;
     font-size: 0.7rem;
 }
-img{
-    width: 3.5rem;
-}
+
 .back-to-shop{
     margin-top: 4.5rem;
 }

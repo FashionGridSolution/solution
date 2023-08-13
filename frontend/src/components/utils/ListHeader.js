@@ -9,24 +9,24 @@ const ListHeader = () => {
               {" "}
               <ul className="navbar-nav d-lg-flex align-items-lg-center">
                 {" "}
-                <div class="dropdown">
+                <div className="dropdown">
                   <button
-                    class="btn btn-secondary dropdown-toggle mx-5"
+                    className="btn btn-secondary dropdown-toggle mx-5"
                     type="button"
                   >
                     Sort By
                   </button>
                   <div
-                    class="dropdown-menu"
+                    className="dropdown-menu"
                     aria-labelledby="dropdownMenuButton"
                   >
-                    <a class="dropdown-item" href="#">
+                    <a className="dropdown-item" href="#">
                       Action
                     </a>
-                    <a class="dropdown-item" href="#">
+                    <a className="dropdown-item" href="#">
                       Another action
                     </a>
-                    <a class="dropdown-item" href="#">
+                    <a className="dropdown-item" href="#">
                       Something else here
                     </a>
                   </div>

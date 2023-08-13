@@ -65,7 +65,7 @@ body{
 .new-price{
 	font-size: 13px;
 	font-weight: bold;
-	color: red;
+	color: black;
 	
 }
 .old-price{
@@ -227,4 +227,11 @@ body{
 .tmb_pic{
     height:150px;
 	width: 200px;
+}
+
+a,p{
+	padding:0px;
+}
+h3{
+	margin: 0px;
 }

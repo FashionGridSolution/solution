@@ -55,7 +55,6 @@ const FilterBar = () => {
             aria-expanded="true"
             aria-controls="inner-box"
             id="out"
-            onclick="outerFilter()"
           >
             +
           </button>

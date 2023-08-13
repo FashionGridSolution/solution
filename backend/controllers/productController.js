@@ -3,38 +3,49 @@ const expressAsyncHandler=require("express-async-handler")
 const mongoose=require('mongoose');
 const User=require('../models/userModel');
 const addProduct=expressAsyncHandler(async(req,res)=>{
-    const {title,description,category,price,seller,stock,images,features}=req.body;
-    if(!title || !description || !category || !price || !stock){
+    const {name,
+      description,
+      category_main,
+      category_secondary,
+      category_tertiary,
+      price,
+      brand,
+      images,
+      features}=req.body;
+    if(!name || !description || !category_main || !price || !brand){
         res.status(400);
         throw new Error("Please fill out all the fields")
     }
-    const productExists = await Product.findOne({ title });
+    const productExists = await Product.findOne({ name });
     if (productExists) {
         res.status(400);
         throw new Error("Product already exists!");
     }
 
     const product= await Product.create({
-        title,
+        name,
         description,
-        category,
+        category_main,
+        category_secondary,
+        category_tertiary,
         price,
-        seller,
-        stock,
+        brand,
         images,
         features
     })
     if (product) {
         res.status(201).json({
             _id: product._id,
-            title: product.title,
+            name: product.name,
             description: product.description,
-            category: product.category,
-            seller: product.seller,
-            stock:product.stock,
-            images:product.images,
-            features:product.features
-        })
+            category_main: product.category_main,
+            category_secondary: product.category_secondary,
+            category_tertiary: product.category_tertiary,
+            price: product.price,
+            brand: product.brand,
+            images: product.images,
+            features: product.features,
+        });
     } else {
         res.status(400);
         throw new Error("product not found")
@@ -55,7 +66,7 @@ const viewAllProducts=expressAsyncHandler(async(req,res)=>{
 const findProductsByName=expressAsyncHandler(async(req,res)=>{
     const keyword = req.query.search || ''; // Set an empty string as default
   const products = await Product.find({
-    title: {
+    name: {
       $regex: keyword,
       $options: 'i',
     },

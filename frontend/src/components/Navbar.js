@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useState} from "react";
 import {useNavigate } from "react-router-dom";
 
 const Navbar = () => {
@@ -7,7 +7,7 @@ const Navbar = () => {
     localStorage.removeItem("userInfo");
     navigate("/login");
   }
-
+  
   return (
     <div>
       <header className="header ">
@@ -40,10 +40,7 @@ const Navbar = () => {
         </div>
       </li>
     </ul>
-    <form className="form-inline my-2 my-lg-0">
-      <input className="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search"/>
-      <button className="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-    </form>
+   
     <button type="button" className="btn btn-dark ml-2" onClick={logoutHandler}>Logout</button>
   </div>
 </nav>
