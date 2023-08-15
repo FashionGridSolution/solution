@@ -28,6 +28,9 @@ const Navbar = () => {
       <li className="nav-item active">
         <a className="nav-link" href="#" onClick={() => navigate('/cart')}>Cart</a>
       </li>
+      <li className="nav-item active">
+        <a className="nav-link" href="#" onClick={() => navigate('/chat')}>Chat</a>
+      </li>
       <li className="nav-item dropdown">
         <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           Categories

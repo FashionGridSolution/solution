@@ -8,9 +8,7 @@ const connectDB=require('./config/db');
 const cors = require('cors');
 connectDB();
 const allowedOrigins = ['http://localhost:3000']; 
-app.use(cors({
-  origin: allowedOrigins
-}));
+app.use(cors());
 //resolve routes here
 
 //api/v1
