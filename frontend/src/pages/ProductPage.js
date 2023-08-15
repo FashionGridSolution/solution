@@ -59,7 +59,7 @@ const ProductPage = () => {
     <div className="row r3">
       <div className="col-md-5 p-0 klo">
         <ul>
-            {product.features.map((feature) => (<li>feature</li>))}
+            {product.features?(product.features.map((feature) => (<li>feature</li>))):(<li>no features</li>)}
         </ul>
       </div>
       <div className="col-md-7 w-100">

@@ -13,6 +13,7 @@ const Cart = () => {
       navigate("/login");
     }
   }, [navigate])
+  
   return (
     <div>
         <Navbar/>

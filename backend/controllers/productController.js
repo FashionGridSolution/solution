@@ -2,6 +2,7 @@ const Product=require('../models/productModel')
 const expressAsyncHandler=require("express-async-handler")
 const mongoose=require('mongoose');
 const User=require('../models/userModel');
+const userInteraction=require('../models/userInteraction');
 const addProduct=expressAsyncHandler(async(req,res)=>{
     const {name,
       description,
@@ -110,6 +111,20 @@ const getProductById=expressAsyncHandler(async(req,res)=>{
         user.clickedProducts.push(productId);
         await user.save();
     }
+    
+   const newInteraction=await userInteraction.create({
+        userId:req.user._id,
+        product:productId,
+        action:1
+    })
+    newInteraction.dateScore=await newInteraction.getDateScore();
+    try{
+      await user.userInteractions.push(newInteraction._id);
+    }catch{
+      console.log("error")
+    }
+    user.save();
+    
     if(!productId){
         res.status(400);
         throw new Error("Please provide a product id")
@@ -118,7 +133,7 @@ const getProductById=expressAsyncHandler(async(req,res)=>{
         const product = await Product.findById(productId);
     
         if (product) {
-          res.json(product);
+          res.json({product,newInteraction});
         } else {
           res.status(404).json({ message: 'Product not found' });
         }

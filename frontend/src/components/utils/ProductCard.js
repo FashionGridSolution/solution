@@ -1,9 +1,24 @@
 import React from "react";
 import "./ProductCard.css";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 const ProductCard = (props) => {
   const navigate = useNavigate();
-  console.log(props);
+
+  const AddToCardHandler =async () => {
+    console.log(props.id);
+    try {
+      const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+      const accessToken = userInfo.token; // Get the Bearer token from userInfo
+      const {data}=await axios.post('/api/user/cart',{productId:props.id},{
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+          }})
+      console.log(data);
+    } catch (error) {
+      
+    }
+  };
   return (
    
     <div className="col-md-4 my-2">
@@ -106,7 +121,7 @@ const ProductCard = (props) => {
               <i className="fa fa-star-o rating-star" />
               <span className="rating-number">{props.brand}</span>
             </div>
-            <span className="buy">Add To Cart +</span>
+            <span className="buy" type="button" onClick={AddToCardHandler}>Add To Cart +</span>
           </div>
         </div>
       </div>

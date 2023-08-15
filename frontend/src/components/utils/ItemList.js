@@ -7,29 +7,33 @@ import axios from 'axios'
 const ItemList = () => {
   const [products, setProducts] = useState([]);
 
-  useEffect(async () => {
-    try{
-      const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-        const accessToken = userInfo.token; // Get the Bearer token from userInfo
-      const { data } = await axios.get(' http://127.0.0.1:8080/api/product', {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
+  useEffect(() => {
+    const getItems=async()=>{
+      try{
+        const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+          const accessToken = userInfo.token; // Get the Bearer token from userInfo
+        const { data } = await axios.get(' http://127.0.0.1:8080/api/product', {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        });
+        setProducts(data);
+        console.log(data);
+      }catch (error) {
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          console.error('Server responded with status:', error.response.status);
+        } else if (error.request) {
+          // The request was made but no response was received
+          console.error('No response received from the server');
+        } else {
+          // Something else happened
+          console.error('Error:', error.message);
         }
-      });
-      setProducts(data);
-      console.log(data);
-    }catch (error) {
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        console.error('Server responded with status:', error.response.status);
-      } else if (error.request) {
-        // The request was made but no response was received
-        console.error('No response received from the server');
-      } else {
-        // Something else happened
-        console.error('Error:', error.message);
       }
     }
+    getItems()
+    
     
   }, []);
 

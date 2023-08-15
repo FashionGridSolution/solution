@@ -16,13 +16,15 @@ const userSchema=mongoose.Schema(
             required:true,
             default: "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"
         },
-        clickedProducts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
+        clickedProducts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }], 
         searchedProducts: [ String],
         isAdmin:{
             type:Boolean,
             required:true,
             default:false,
-        }
+        },
+        userInteractions:[{type:mongoose.Schema.Types.ObjectId,ref:'UserInteraction'}],
+        cartId:{type:mongoose.Schema.Types.ObjectId,ref:'Cart'}
     },
     {timestamps:true}
 )
