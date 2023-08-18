@@ -84,4 +84,6 @@ const allUsers = expressAsyncHandler(async (req, res) => {
     const users = await User.find(keyword).find();
     res.send(users);
 })
-module.exports = { registerUser, authUser, allUsers };
+
+
+module.exports = { registerUser, authUser, allUsers};

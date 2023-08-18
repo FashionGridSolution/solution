@@ -18,6 +18,7 @@ function App() {
           <Route path="/cart" element={<Cart />} />
           <Route path="/product/:productid" element={<ProductPage />} />
           <Route path="/chat" element={<Chatpage/>} />
+          <Route path="/search/:searchId" element={<Chatpage/>} />
         </Routes>
       </div>
     </Router>
