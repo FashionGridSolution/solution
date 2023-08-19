@@ -16,6 +16,15 @@ from flask import Flask, request, jsonify
 from flask import Flask
 from flask_cors import CORS
 
+from transformers import SegformerImageProcessor, AutoModelForSemanticSegmentation
+from transformers import AutoFeatureExtractor, SegformerForSemanticSegmentation
+from sentence_transformers import SentenceTransformer
+from transformers import ViTImageProcessor, ViTForImageClassification, AutoFeatureExtractor, AutoModel,ViTModel
+from sentence_transformers import util
+from transformers import AutoTokenizer
+# from splade.models.transformer_rep import Splade
+from transformers import AutoTokenizer, AutoModelForMaskedLM
+
 class ChatModel:
     def __init__(self):
         self.OPENAI_API_KEY = "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" #getpass()
@@ -49,15 +58,15 @@ class ChatModel:
 
 app = Flask(__name__)
 CORS(app)
-chat_model = ChatModel()
+# chat_model = ChatModel()
 
 @app.route('/getans', methods=['POST'])
 def capitalize_text():
     try:
         data = request.json
         input_text = data['text']
-        answer = chat_model(input_text)
-        # answer = input_text.upper()
+        # answer = chat_model(input_text)
+        answer = input_text.upper()
         urls = []
         return jsonify({'result': answer, 'urls':urls}), 200
     except Exception as e:
