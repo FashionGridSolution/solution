@@ -1,69 +1,74 @@
-from langchain import OpenAI
-from langchain.chains import LLMChain, ConversationChain
-from langchain.chains.conversation.memory import (ConversationBufferMemory,
-                                                  ConversationSummaryMemory,
-                                                  ConversationBufferWindowMemory,
-                                                  ConversationKGMemory)
-from langchain.callbacks import get_openai_callback
-from langchain.chains.question_answering import load_qa_chain
-from langchain.llms import OpenAI
-import openai
-from langchain.prompts import PromptTemplate
-from langchain.memory import ConversationBufferMemory
-import torch
-from langchain.llms import OpenAI
-from flask import Flask, request, jsonify
-from flask import Flask
-from flask_cors import CORS
-
-class ChatModel:
-    def __init__(self):
-        self.OPENAI_API_KEY = "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" #getpass()
-        self.llm = OpenAI(
-            temperature=0,
-            openai_api_key=self.OPENAI_API_KEY,
-            model_name='text-davinci-003'  # can be used with llms like 'gpt-3.5-turbo'
-        )
-
-        self.template = """
-        Provide fashion outfit recommendations for different occasions based on user queries.
-        Respond with appropriate outfit suggestions that suit the specified event or scenario.
-        Ensure the recommendations are stylish, suitable for the occasion, and consider factors such as weather, formality, and personal style. Always recommend 1 topwear, 1 bottomwear, 1 footwear and 1 accessory to go along with
-        Question: {question}
-        Answer:
-        """
-
-        self.prompt = PromptTemplate(
-            input_variables=["question"], template=self.template
-        )
-
-        self.conversation_sum = LLMChain(
-            llm=self.llm,
-            memory=ConversationSummaryMemory(llm=self.llm), prompt = self.prompt
-        )
-
-    def __call__(self, question):
-        return self.conversation_sum.run(question)
+from common_utils import *
+from utils import *
 
 
+device =  'cuda' if torch.cuda.is_available() else 'cpu'
+dense_clip_model_id = 'sentence-transformers/clip-ViT-B-32'
+sparse_model_id = 'naver/splade-cocondenser-selfdistil'
+vit_model_id = "google/vit-base-patch16-224" ##"nateraw/vit-base-beans"
+recom_model_path = "../stored_result/export"
+
+print("Loading models...")
+print("Loading dense clip model...")
+dense_clip_model = SentenceTransformer(dense_clip_model_id,device=device)
+print("Loading sparse model...")
+vit_model = Img_embedder()
+print("Loading SparseModel...")
+sparse_model = SparseModel()
+sparse_tokenizer = AutoTokenizer.from_pretrained(sparse_model_id)
+print("Loading recom model...")
+recom_model = tf.saved_model.load(recom_model_path)
+
+def get_all_stored():
+  hyb_json_file_path = '../stored_result/all_encodings_3000.json'
+  vit_json_file_path = '../stored_result/all_img_encodings_3000.json'
+  celeb_photo_json_path = '../stored_result/all_cleb_pic_links.json'
+  celeb_pid_json_path = '../stored_result/all_cleb_to_pid.json'
+
+  all_data_path = '../stored_result/SummarizedData3000.csv'
+  usr_emb_path = '../stored_result/User_embed.json'
+  item_emb_path = '../stored_result/Item_embed.json'
+
+  with open(hyb_json_file_path, 'r') as json_file:
+      hyb_emb_list = json.load(json_file)
+
+  with open(vit_json_file_path, 'r') as json_file:
+      vit_emb_list = json.load(json_file)
+
+  with open(celeb_photo_json_path, 'r') as json_file:
+      cleb_pics = json.load(json_file)
+
+  with open(celeb_pid_json_path, 'r') as json_file:
+      celebs_to_products = json.load(json_file)
+
+  df = pd.read_csv(all_data_path)
+  user_df = pd.read_json(usr_emb_path, orient='records')
+  item_df = pd.read_json(item_emb_path, orient='records')
+
+  return hyb_emb_list,vit_emb_list,cleb_pics,celebs_to_products,df,user_df,item_df
+
+hyb_emb_list,vit_emb_list,cleb_pics,celebs_to_products,df,user_df,item_df = get_all_stored()
+
+f = FullPipeline(hyb_emb_list,celebs_to_products,user_df,item_df,df, dense_clip_model, sparse_model, sparse_tokenizer,recom_model,vit_emb_list,vit_model,device)
 
 app = Flask(__name__)
 CORS(app)
-chat_model = ChatModel()
-
 @app.route('/getans', methods=['POST'])
 def capitalize_text():
     try:
         data = request.json
-        print(data)
-        userId=  ""
         input_text = data['text']
-        # print("received"+userId+input_text)
-        answer = chat_model(input_text)
-        answer="sample text"
+        query_type = data['query_type']
+        # answer = chat_model(input_text)
         # answer = input_text.upper()
-        urls = []
-        return jsonify({'result': answer, 'urls':urls}), 200
+        if query_type == 'text':
+            final_ans = f(input_text,1)
+        else:
+            # TODO: Add image processing
+            final_ans = f.search_from_img(Image.open(urllib.request.urlopen(input_text)))
+
+        return jsonify(final_ans), 200
+    
     except Exception as e:
         return jsonify({'error': str(e)}), 400
 
@@ -71,3 +76,6 @@ def capitalize_text():
 if __name__=="__main__":
     print("Starting Flask Server")
     app.run(debug=True, port=5000)
+    # print("Staring pipeline. ...")
+    # suggestion = f("Suggest me Interview outfit for men","Male",1)
+    # print(suggestion)
