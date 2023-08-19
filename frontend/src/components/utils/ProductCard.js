@@ -5,28 +5,29 @@ import axios from "axios";
 const ProductCard = (props) => {
   const navigate = useNavigate();
 
-  const AddToCardHandler =async () => {
+  const AddToCardHandler = async () => {
     console.log(props.id);
     try {
-      const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+      const userInfo = JSON.parse(localStorage.getItem("userInfo"));
       const accessToken = userInfo.token; // Get the Bearer token from userInfo
-      const {data}=await axios.post('/api/user/cart',{productId:props.id},{
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-          }})
+      const { data } = await axios.post(
+        "/api/user/cart",
+        { productId: props.id },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
       console.log(data);
-    } catch (error) {
-      
-    }
+    } catch (error) {}
   };
   return (
-   
-    <div className="col-md-4 my-2">
+    <div className="col-md-4 my-2" style={{maxWidth:"200px"}}>
       <div className="card">
         <div className="image-container">
           <div className="first">
             <div className="d-flex justify-content-between align-items-center">
-              <span className="discount">-25%</span>
               <span className="wishlist">
                 <i className="fa fa-heart-o" />
               </span>
@@ -35,37 +36,28 @@ const ProductCard = (props) => {
           {/* Insert caraousel here */}
 
           <div
-            id="carouselExampleControls"
+            id={`carouselExampleControls${props.id}`}
             className="carousel slide"
             data-ride="carousel"
             data-interval="false"
           >
             <div className="carousel-inner">
-              <div className="carousel-item active">
-                <img
-                  className="d-block w-100  tmb_pic"
-                  src="../images/carouselpic.jpg"
-                  alt="First slide"
-                />
-              </div>
-              <div className="carousel-item">
-                <img
-                  className="d-block tmb_pic"
-                  src="../images/carouselpic2.jpg"
-                  alt="Second slide"
-                />
-              </div>
-              <div className="carousel-item">
-                <img
-                  className="d-block w-100  tmb_pic"
-                  src="../images/carouselpic3.jpg"
-                  alt="Third slide"
-                />
-              </div>
+              {props.images?.map((image, index) => (
+                <div
+                  key={index}
+                  className={`carousel-item ${index === 0 ? "active" : ""}`}
+                >
+                  <img
+                    className="d-block w-100 tmb_pic"
+                    src={image}
+                    alt={`Slide ${index + 1}`}
+                  />
+                </div>
+              ))}
             </div>
             <a
               className="carousel-control-prev"
-              href="#carouselExampleControls"
+              href={`#carouselExampleControls${props.id}`}
               role="button"
               data-slide="prev"
             >
@@ -74,7 +66,7 @@ const ProductCard = (props) => {
             </a>
             <a
               className="carousel-control-next"
-              href="#carouselExampleControls"
+              href={`#carouselExampleControls${props.id}`}
               role="button"
               data-slide="next"
             >
@@ -86,16 +78,20 @@ const ProductCard = (props) => {
         <div className="product-detail-container p-2 text-center">
           <p>
             <a
-            href={`/product/${props.id}`}
-            target="_blank"
-              className="link-secondary">
-              <h3>{props.name}</h3>
-            </a></p>
-            <span className="new-price">Rs. {props.price}</span>
+              href={`/product/${props.id}`}
+              target="_blank"
+              className="link-secondary"
+            >
+              <h5>{props.name}</h5>
+            </a>
+          </p>
+          <span className="new-price">Rs. {props.price}</span>
           <div className="d-flex justify-content-between align-items-center pt-1">
-            {props.description?(props.description.length > 50
-              ? props.description.substring(0, 50) + "..."
-              : props.description):("No Description")}
+            {props.description
+              ? props.description.length > 50
+                ? props.description.substring(0, 50) + "..."
+                : props.description
+              : "No Description"}
             {/* <div className="color-select d-flex ">
               <input type="button" name="grey" className="btn btn_card creme" />
               <input type="button" name="red" className="btn btn_card red ml-2" />
@@ -121,12 +117,13 @@ const ProductCard = (props) => {
               <i className="fa fa-star-o rating-star" />
               <span className="rating-number">{props.brand}</span>
             </div>
-            <span className="buy" type="button" onClick={AddToCardHandler}>Add To Cart +</span>
+            <span className="buy" type="button" onClick={AddToCardHandler}>
+              Add To Cart +
+            </span>
           </div>
         </div>
       </div>
     </div>
-    
   );
 };
 

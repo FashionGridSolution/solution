@@ -127,7 +127,7 @@ const getProductById=expressAsyncHandler(async(req,res)=>{
         const product = await Product.findById(productId);
     
         if (product) {
-          res.json({product,newInteraction});
+          res.json(product);
         } else {
           res.status(404).json({ message: 'Product not found' });
         }

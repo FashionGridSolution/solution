@@ -5,7 +5,21 @@ import { useState,useEffect } from 'react';
 
 import Navbar from '../components/Navbar';
 import axios from 'axios';
-const ProductPage = () => {
+const ProductPage = (props) => {
+  const AddToCardHandler =async () => {
+    console.log(props.id);
+    try {
+      const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+      const accessToken = userInfo.token; // Get the Bearer token from userInfo
+      const {data}=await axios.post('/api/user/cart',{productId:props.id},{
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+          }})
+      console.log(data);
+    } catch (error) {
+      
+    }
+  };
     const { productid } = useParams();
   const [product, setProduct] = useState(null);
   const [searchQuery, setSearchQuery] = useState("")
@@ -14,13 +28,15 @@ const ProductPage = () => {
       try {
         const userInfo = JSON.parse(localStorage.getItem('userInfo'));
         const accessToken = userInfo.token; // Get the Bearer token from userInfo
-        const response = await axios.get(`/api/product/${productid}`, {
+        const response = await axios.get(`http://127.0.0.1:8080/api/product/${productid}`, {
             headers: {
               Authorization: `Bearer ${accessToken}`
             }
           });
-        console.log(response.data);
+        // console.log(response.data);
         setProduct(response.data);
+        console.log(response.data)
+        // console.log(product)
       } catch (error) {
         console.error('Error fetching product:', error);
       }
@@ -33,9 +49,6 @@ const ProductPage = () => {
     return <div>Loading...</div>;
   }
 
-  if (!product) {
-    return <div>Loading...</div>;
-  }
   return (
     <div>
     <Navbar searchQuery={searchQuery} setSearchQuery={setSearchQuery}/>
@@ -77,7 +90,7 @@ const ProductPage = () => {
         {product.description}
     </div>
     <div className='col-md-4'>
-        <button className='btn btn-warning'>Add to Cart</button>
+    <span className="buy" type="button" onClick={AddToCardHandler}>Add To Cart +</span>
         </div>
   </div>
 </div>
