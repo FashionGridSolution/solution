@@ -75,7 +75,7 @@ def capitalize_text():
 
 if __name__=="__main__":
     print("Starting Flask Server")
-    app.run(debug=True, port=5000)
-    # print("Staring pipeline. ...")
+    app.run(debug=False, port=5000)
+    # print("Staring pipeline. ...") 
     # suggestion = f("Suggest me Interview outfit for men","Male",1)
     # print(suggestion)

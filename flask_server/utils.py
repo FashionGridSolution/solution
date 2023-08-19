@@ -224,10 +224,11 @@ class Similarity_search:
     self.kb = embs
     self.k = k
     self.id_to_cat = {row['uniq_id']:row['MainCategory'].replace(" ","").replace("&","").replace(",","")  for i,row in df.iterrows()}
+    self.id_to_price = {row['uniq_id']:float(row['retail_price'])  for i,row in df.iterrows()}
     self.dense_clip_model, self.sparse_model, self.sparse_tokenizer = dense_clip_model, sparse_model, sparse_tokenizer
     self.device = device
 
-  def __call__(self,query_txt,cat,alpha=0.2):
+  def __call__(self,query_txt,cat,lower,upper,alpha=0.2):
     q_dense_vec, q_sparse_dict = encode(query_txt,self.dense_clip_model, self.sparse_model, self.sparse_tokenizer,self.device)
     sim_scrores = []
     for element in self.kb:
@@ -241,6 +242,10 @@ class Similarity_search:
         sim_scrores.append(1000)
         continue;
 
+      if self.id_to_price[id]<lower or self.id_to_price[id]>upper:
+        sim_scrores.append(1000)
+        continue;
+            
       d_sim = distance.cosine(alpha*np.array(q_dense_vec),alpha*np.array(dense_values))
       a = np.zeros((30522))
       b = np.zeros((30522))
@@ -307,6 +312,8 @@ class Similarity_search_in_cleb:
       if id not in serach_id_space:
         sim_scrores.append(1000)
         continue;
+      
+    
       d_sim = distance.cosine(alpha*np.array(q_dense_vec),alpha*np.array(dense_values))
       a = np.zeros((30522))
       b = np.zeros((30522))
@@ -348,18 +355,22 @@ class ChatModel:
               openai_api_key=self.OPENAI_API_KEY,
               model_name='text-davinci-003'  # can be used with llms like 'gpt-3.5-turbo'
           )
+    
     self.template = """
               You are a AI Fashion outfit recommender that gives short crisp replies, and has no bias or discrimination towards gender, race, religion
               Provide outfit recommendations for different occasions based on user queries that suit the specified event or scenario.
               Ensure the recommendations are trendy, suitable for the occasion, and consider factors such as weather, formality,
-              and personal style preferences. Always recommend 1 topwear, 1 bottomwear, 1 footwear and 1 accessory to go along with the rest. Also predict the gender for which the user 
-              wants the outfit, if no gender is mentioned never hallucinate and predict "No Gender" in that case.
+              and personal style preferences. Always recommend 1 topwear, 1 bottomwear, 1 footwear and 1 accessory to go along with the rest. Also predict the gender for which the user
+              wants the outfit, if no gender is mentioned never hallucinate and predict "No Gender" in that case. You should also predict the budget range the user wants,
+              distinguish between the upper and lower budget limits, never hallucinate and predict "No Limit" for that limit for whichever of the 2 limits is not present.
               Always answers in 4 points in this format-
               0. Gender:
               1. Topwear:
               2. Bottomwear:
               3. Footwear:
               4. Accessory:
+              5. Budget lower limit:
+              6. Budget upper limit:
 
               Previous conversation:
               {chat_history}
@@ -368,6 +379,7 @@ class ChatModel:
               Question: {question}
               Answer:
               """
+
     
     self.prompt = PromptTemplate(input_variables=["chat_history", "question"], template=self.template)
     self.memory = ConversationSummaryMemory(llm=self.llm, memory_key="chat_history")
@@ -386,9 +398,17 @@ class ChatModel:
     for line in lines:
         match = pattern.match(line)
         if match:
-            category = match.group(1)
+            category = match.group(1).strip()
             value = match.group(2)
-            data[category] = value
+            if 'Budget lower limit' in category or 'Budget upper limit' in category:
+              try:
+                value = re.search(r'\d+', value).group()
+                data[category] = float(value)
+              except:
+                data[category] = 1e7 if 'Budget upper limit' in category else 0
+            else:
+              data[category] = value.strip()
+
 
     # json_data = json.dumps(data, indent=4)
     # print(json_data)
@@ -431,19 +451,23 @@ class FullPipeline:
       return {'Body':q_text, 'Prods':final_ans}
 
     sugg = self.c(q_text)
+    sugg_values = [x[1] for x in sugg.items()]
+    upper = sugg_values[-1]
+    lower = sugg_values[-2]
+    sugg_values = sugg_values[:-2]
     temp = ["","Clothing","Clothing","Footwear","Accessories"]
     item_ind = 0
     gen = ""
-    for _,sug_text in sugg.items():
+    for sug_text in sugg_values:
       if item_ind == 0:
+        item_ind+=1
         gen = sug_text;
         print("-->",gen)
-        item_ind+=1
         continue;
-      lev1 = self.s("For "+gen+". "+q_text+". "+sug_text,temp[item_ind])
+      lev1 = self.s("For "+gen+". "+sug_text,temp[item_ind],lower,upper)
       ids_lev1 = [p['id'] for p in lev1]
       print(user_id,ids_lev1)
-      lev2 = self.r.topk(user_id,ids_lev1, k=2)
+      lev2 = self.r.topk(user_id,ids_lev1)
       final_ans[temp[item_ind]].extend(lev2)
       item_ind+=1
 
