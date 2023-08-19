@@ -54,10 +54,15 @@ def capitalize_text():
     try:
         data = request.json
         input_text = data['text']
+        query_type = data['query_type']
         # answer = chat_model(input_text)
         # answer = input_text.upper()
-        final_ans = f("Suggest me Interview outfit for men","Male",1)
-        urls = []
+        if query_type == 'text':
+            final_ans = f("Suggest me Interview outfit for men","Male",1)
+        else:
+            # TODO: Add image processing
+            final_ans = f.search_from_img(Image.open(urllib.request.urlopen(input_text)))
+
         return jsonify(final_ans), 200
     
     except Exception as e:
