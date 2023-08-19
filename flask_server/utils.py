@@ -149,7 +149,7 @@ class Segment_images_into_parts:
 
 
 class Imagepart_similarity_search:
-  def __init__(self, embs, enc_fun, k=4):
+  def __init__(self, embs, enc_fun,df, k=4):
     self.kb = embs
     self.k = k
     self.id_to_cat = {row['uniq_id']:row['MainCategory'].replace(" ","").replace("&","").replace(",","")  for i,row in df.iterrows()}
@@ -183,9 +183,9 @@ class Imagepart_similarity_search:
 
 
 class ProdIds_from_image:
-  def __init__(self, embs, k_per_part_prod, enc_fun):
+  def __init__(self, embs, k_per_part_prod, enc_fun,df):
     self.img_segmenter = Segment_images_into_parts()
-    self.segmente_searcher = Imagepart_similarity_search(embs, enc_fun, k_per_part_prod)
+    self.segmente_searcher = Imagepart_similarity_search(embs, enc_fun,df, k_per_part_prod)
 
   def __call__(self, query_img,custom_vit=False):
     suggested_prods = defaultdict(list)
@@ -199,7 +199,7 @@ class ProdIds_from_image:
 
 
 
-def encode(text: str, dense_clip_model, sparse_model, sparse_tokenizer):
+def encode(text: str, dense_clip_model, sparse_model, sparse_tokenizer,device):
     # create dense vec
     dense_vec = dense_clip_model.encode(text).tolist()
     # create sparse vec
@@ -218,14 +218,15 @@ def encode(text: str, dense_clip_model, sparse_model, sparse_tokenizer):
 
 
 class Similarity_search:
-  def __init__(self, embs, df, dense_clip_model, sparse_model, sparse_tokenizer, k=4):
+  def __init__(self, embs, df, dense_clip_model, sparse_model, sparse_tokenizer,device, k=4):
     self.kb = embs
     self.k = k
     self.id_to_cat = {row['uniq_id']:row['MainCategory'].replace(" ","").replace("&","").replace(",","")  for i,row in df.iterrows()}
     self.dense_clip_model, self.sparse_model, self.sparse_tokenizer = dense_clip_model, sparse_model, sparse_tokenizer
+    self.device = device
 
   def __call__(self,query_txt,cat,alpha=0.2):
-    q_dense_vec, q_sparse_dict = encode(query_txt,self.dense_clip_model, self.sparse_model, self.sparse_tokenizer)
+    q_dense_vec, q_sparse_dict = encode(query_txt,self.dense_clip_model, self.sparse_model, self.sparse_tokenizer,self.device)
     sim_scrores = []
     for element in self.kb:
       id, dense_values, sparse_values, metadata = element['id'],element['dense_values'],element['sparse_values'],element['metadata']
@@ -263,13 +264,14 @@ def celeb_trigger(qry, names):
 
 
 class Similarity_search_in_cleb:
-  def __init__(self, embs, celebs_to_products, df, dense_clip_model, sparse_model, sparse_tokenizer, k=4):
+  def __init__(self, embs, celebs_to_products, df, dense_clip_model, sparse_model, sparse_tokenizer,device, k=4):
     self.kb = embs
     self.k = k
     self.id_to_cat = {row['uniq_id']:row['MainCategory'].replace(" ","").replace("&","").replace(",","")  for i,row in df.iterrows()}
     self.celebs_to_products = celebs_to_products
     self.celebs_name = celebs_to_products.keys()
     self.dense_clip_model, self.sparse_model, self.sparse_tokenizer = dense_clip_model, sparse_model, sparse_tokenizer
+    self.device = device
 
   def __call__(self,query_txt,cat,alpha=0.2):
     name,sim_score = celeb_trigger(query_txt,self.celebs_name)
@@ -282,12 +284,12 @@ class Similarity_search_in_cleb:
     if cat=='Clothing':
       serach_id_space=serach_id_space+self.celebs_to_products[name]['MergedCombinations']['body']
     
-    if cat not in celebs_to_products[name]['MergedCombinations'].keys():
+    if cat not in self.celebs_to_products[name]['MergedCombinations'].keys():
       return []
     # print(name)
     # print(serach_id_space)
     # assert(0)
-    q_dense_vec, q_sparse_dict = encode(query_txt,self.dense_clip_model, self.sparse_model, self.sparse_tokenizer)
+    q_dense_vec, q_sparse_dict = encode(query_txt,self.dense_clip_model, self.sparse_model, self.sparse_tokenizer,self.device)
     sim_scrores = []
     for element in self.kb:
       id, dense_values, sparse_values, metadata = element['id'],element['dense_values'],element['sparse_values'],element['metadata']
@@ -395,12 +397,18 @@ class ChatModel:
 
 
 class FullPipeline:
-  def __init__(self,hyb_emb_list,celebs_to_products,user_df,item_df,df,dense_clip_model, sparse_model, sparse_tokenizer,recom_model):
-    self.s = Similarity_search(hyb_emb_list,df, dense_clip_model, sparse_model, sparse_tokenizer,k=4)
-    self.s_c = Similarity_search_in_cleb(hyb_emb_list,celebs_to_products,df, dense_clip_model, sparse_model, sparse_tokenizer,k=2)
+  def __init__(self,hyb_emb_list,celebs_to_products,user_df,item_df,df,dense_clip_model, sparse_model, sparse_tokenizer,recom_model,vit_emb_list,vit_model,device):
+    print("Loading models")
+    print("Initializing similarity search")
+    self.s = Similarity_search(hyb_emb_list,df, dense_clip_model, sparse_model, sparse_tokenizer,device,k=4)
+    print("Initializing celeb similarity search")
+    self.s_c = Similarity_search_in_cleb(hyb_emb_list,celebs_to_products,df, dense_clip_model, sparse_model, sparse_tokenizer,device,k=2)
+    print("Initializing recommender")
     self.r = Recommender(user_df,item_df,recom_model)
+    print("Initializing chat model")
     self.c = ChatModel()
-    self.p = ProdIds_from_image(vit_emb_list,1,vit_model)
+    print("Initializing image search")
+    self.p = ProdIds_from_image(vit_emb_list,1,vit_model,df)
   
   def __call__(self, q_text,gen,user_id):
     final_ans = defaultdict(list)

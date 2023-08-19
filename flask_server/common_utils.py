@@ -39,7 +39,7 @@ import matplotlib.pyplot as plt
 import re
 
 import tensorflow as tf
-from langchain import OpenAI
+# from langchain import OpenAI
 from langchain.chains import LLMChain, ConversationChain
 from langchain.chains.conversation.memory import (ConversationBufferMemory,
                                                   ConversationSummaryMemory)

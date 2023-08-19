@@ -8,22 +8,26 @@ sparse_model_id = 'naver/splade-cocondenser-selfdistil'
 vit_model_id = "google/vit-base-patch16-224" ##"nateraw/vit-base-beans"
 recom_model_path = "../stored_result/export"
 
-
+print("Loading models...")
+print("Loading dense clip model...")
 dense_clip_model = SentenceTransformer(dense_clip_model_id,device=device)
+print("Loading sparse model...")
 vit_model = Img_embedder()
+print("Loading SparseModel...")
 sparse_model = SparseModel()
 sparse_tokenizer = AutoTokenizer.from_pretrained(sparse_model_id)
+print("Loading recom model...")
 recom_model = tf.saved_model.load(recom_model_path)
 
 def get_all_stored():
-  hyb_json_file_path = '/content/drive/MyDrive/grid/all_encodings_3000.json'
-  vit_json_file_path = '/content/drive/MyDrive/grid/all_img_encodings_3000.json'
-  celeb_photo_json_path = '/content/drive/MyDrive/grid/all_cleb_pic_links.json'
-  celeb_pid_json_path = '/content/drive/MyDrive/grid/all_cleb_to_pid.json'
+  hyb_json_file_path = '../stored_result/all_encodings_3000.json'
+  vit_json_file_path = '../stored_result/all_img_encodings_3000.json'
+  celeb_photo_json_path = '../stored_result/all_cleb_pic_links.json'
+  celeb_pid_json_path = '../stored_result/all_cleb_to_pid.json'
 
-  all_data_path = '/content/drive/MyDrive/grid/SummarizedData3000.csv'
-  usr_emb_path = '/content/drive/MyDrive/grid/User_embed.json'
-  item_emb_path = '/content/drive/MyDrive/grid/Item_embed.json'
+  all_data_path = '../stored_result/SummarizedData3000.csv'
+  usr_emb_path = '../stored_result/User_embed.json'
+  item_emb_path = '../stored_result/Item_embed.json'
 
   with open(hyb_json_file_path, 'r') as json_file:
       hyb_emb_list = json.load(json_file)
@@ -44,7 +48,8 @@ def get_all_stored():
   return hyb_emb_list,vit_emb_list,cleb_pics,celebs_to_products,df,user_df,item_df
 
 hyb_emb_list,vit_emb_list,cleb_pics,celebs_to_products,df,user_df,item_df = get_all_stored()
-f = FullPipeline(hyb_emb_list,celebs_to_products,user_df,item_df,df, dense_clip_model, sparse_model, sparse_tokenizer,recom_model)
+
+f = FullPipeline(hyb_emb_list,celebs_to_products,user_df,item_df,df, dense_clip_model, sparse_model, sparse_tokenizer,recom_model,vit_emb_list,vit_model,device)
 
 
 app = Flask(__name__)
@@ -72,3 +77,6 @@ def capitalize_text():
 if __name__=="__main__":
     print("Starting Flask Server")
     app.run(debug=True, port=5000)
+    # print("Staring pipeline. ...")
+    # suggestion = f("Suggest me Interview outfit for men","Male",1)
+    # print(suggestion)
