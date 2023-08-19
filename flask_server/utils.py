@@ -194,7 +194,9 @@ class ProdIds_from_image:
       if cat in part_images.keys():
         for x in part_images[cat]:
           suggested_prods[cat].extend(self.segmente_searcher(x,cat));
+          suggested_prods[cat] = list(set(suggested_prods[cat]))
     suggested_prods["body"].extend(self.segmente_searcher(remove(query_img),'Clothing'));
+    suggested_prods["body"] = list(set(suggested_prods["body"]))
     return suggested_prods;
 
 

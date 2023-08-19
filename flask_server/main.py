@@ -51,7 +51,6 @@ hyb_emb_list,vit_emb_list,cleb_pics,celebs_to_products,df,user_df,item_df = get_
 
 f = FullPipeline(hyb_emb_list,celebs_to_products,user_df,item_df,df, dense_clip_model, sparse_model, sparse_tokenizer,recom_model,vit_emb_list,vit_model,device)
 
-
 app = Flask(__name__)
 CORS(app)
 @app.route('/getans', methods=['POST'])
@@ -63,7 +62,7 @@ def capitalize_text():
         # answer = chat_model(input_text)
         # answer = input_text.upper()
         if query_type == 'text':
-            final_ans = f("Suggest me Interview outfit for men","Male",1)
+            final_ans = f(input_text,"",1)
         else:
             # TODO: Add image processing
             final_ans = f.search_from_img(Image.open(urllib.request.urlopen(input_text)))
