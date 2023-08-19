@@ -23,13 +23,16 @@ io.on("connection", (socket) => {
   socket.on("message", async (data) => {
     // Process the message, e.g., send a reply back
     const msg = data.message;
-    const reply = `Received message from User ${data.userId}: ${data.message}`;
-    console.log(msg);
+    const type=data.type;
+    const testing = `Received message from User ${data.userId}: ${data.message}`;
+    console.log(testing);
     
     //send the reqForModel to post to port 5000
     try {
       const response = await axios.post("http://127.0.0.1:5000/getans", {
-        text: msg
+        userId:data.userId,
+        text: msg,
+        type:type,
       });
 
       const capitalizedMessage = response.data.result;

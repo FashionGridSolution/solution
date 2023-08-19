@@ -1,6 +1,6 @@
 import React from 'react'
 
-const ListHeader = () => {
+const ListHeader = ({ onPageChange, currentPage,products,setProducts  }) => {
   return (
     <div className="bg-white rounded d-flex align-items-center justify-content-between">
           <button className="btn btnhide text-uppercase">Hide Filters</button>
@@ -53,19 +53,24 @@ const ListHeader = () => {
                 {" "}
                 <li className="page-item">
                   {" "}
-                  <a className="page-link" href="#" aria-label="Previous">
+                  <a className="page-link" href="#" aria-label="Previous" onClick={() => onPageChange(currentPage - 1)}>
                     {" "}
                     <span aria-hidden="true" className="font-weight-bold">
                       &lt;
                     </span>{" "}
-                    <span className="sr-only">Previous</span>{" "}
+                    <span className="sr-only" >Previous</span>
                   </a>{" "}
                 </li>{" "}
-                <li className="page-item active">
-                  <a className="page-link" href="#">
+                <li className={`page-item ${currentPage === 1 ? 'active' : ''}`}>
+                  <a className="page-link" href="#" onClick={() => onPageChange(1)}>
                     1
                   </a>
-                </li>{" "}
+                </li>
+                <li className={`page-item ${currentPage === 2 ? 'active' : ''}`}>
+                  <a className="page-link" href="#" onClick={() => onPageChange(2)}>
+                    2
+                  </a>
+                </li>
                 <li className="page-item">
                   <a className="page-link" href="#">
                     ..
@@ -78,12 +83,12 @@ const ListHeader = () => {
                 </li>{" "}
                 <li className="page-item">
                   {" "}
-                  <a className="page-link" href="#" aria-label="Next">
+                  <a className="page-link" href="#" aria-label="Next" onClick={() => onPageChange(currentPage + 1)}>
                     {" "}
                     <span aria-hidden="true" className="font-weight-bold">
                       &gt;
                     </span>{" "}
-                    <span className="sr-only">Next</span>{" "}
+                    <span className="sr-only" >Next</span>{" "}
                   </a>{" "}
                 </li>{" "}
               </ul>{" "}
