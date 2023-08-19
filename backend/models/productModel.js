@@ -10,6 +10,7 @@ const productSchema = mongoose.Schema(
     "brand":"string",
     "images": ["string"],      // Array of image URLs for the product
     "features": ["string"],    // Array of product features or specifications
+    "productid":"Number"
   },
   { timestamps: true }
 )

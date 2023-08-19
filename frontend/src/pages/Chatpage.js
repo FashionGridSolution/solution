@@ -5,6 +5,7 @@ import "./Chatpage.css";
 import Navbar from "../components/Navbar";
 import ChatImage from "../components/utils/ChatImage";
 import axios from "axios";
+import JsonBodyFormatter from "../components/utils/JsonBodyFormatter";
 
 const Chatpage = () => {
   const [imageInputKey, setImageInputKey] = useState(0); // Key to reset the input
@@ -95,11 +96,36 @@ const Chatpage = () => {
     var newSocket = io("http://localhost:9000"); // Replace with your backend URL
     setSocket(newSocket);
     const getReply = async () => {
-      await newSocket.on("reply", (data) => {
+      const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+      const accessToken = userInfo.token;
+      newSocket.on("reply", async(data) => {
+        console.log(`Data received is `);
         console.log(data);
+        const allProductIds = Object.values(data.reply.Prods).flat();
+        const modifiedProductIds = await Promise.all(
+          allProductIds.map(async (productId) => {
+            try {
+              const response = await axios.get(
+                `http://127.0.0.1:8080/api/getObjectId/${productId}`,
+                {},
+                {
+                  headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                  },
+                }
+
+              );
+              return response.data.objectId; // Modify based on your response structure
+            } catch (error) {
+              console.error("Error modifying product:", error);
+              return productId; // Keep original product ID in case of error
+            }
+          })
+        );
+        console.log("Modified product IDs:", modifiedProductIds);
         setMessages((prevMessages) => [
           ...prevMessages,
-          { text: data.reply, type: "received", productids: data.productids },
+          { text: data.reply.Body, type: "received", productids: modifiedProductIds },
         ]);
         chatContainerRef.current.scrollTop =
           chatContainerRef.current.scrollHeight;
@@ -165,7 +191,7 @@ const Chatpage = () => {
                         width={30}
                         height={30}
                       />
-                      <div className="received ml-2 p-3 ">{message.text}</div>
+                      <div className="received ml-2 p-3 "><JsonBodyFormatter jsonBody={message.text}/></div>
                     </>
                   ) : (
                     <>

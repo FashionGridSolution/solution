@@ -18,7 +18,31 @@ app.use(cors());
 
 // Use cors middleware to allow requests from any origin
 app.use(cors());
-
+const response={
+  "Body": "{'0. Gender': 'No Gender', '1. Topwear': 'Sequinned blouse or saree blouse', '2. Bottomwear': 'Saree or lehenga', '3. Footwear': 'Heels or flats', '4. Accessory': 'Jewellery', '5. Budget lower limit': 0, '6. Budget upper limit': 10000000.0}",
+  "Prods": {
+      "Accessories": [
+          565,
+          568,
+          572,
+          160
+      ],
+      "Clothing": [
+          2970,
+          2746,
+          2745,
+          1057,
+          268,
+          2746,
+          1057,
+          2745
+      ],
+      "Footwear": [
+          2215,
+          876
+       ]
+    }
+}
 io.on("connection", (socket) => {
   socket.on("message", async (data) => {
     // Process the message, e.g., send a reply back
@@ -27,15 +51,14 @@ io.on("connection", (socket) => {
     const testing = `Received message from User ${data.userId}: ${data.message}`;
     console.log(testing);
     
-    //send the reqForModel to post to port 5000
     try {
-      const response = await axios.post("http://127.0.0.1:5000/getans", {
-        userId:data.userId,
-        text: msg,
-        type:type,
-      });
-
-      const capitalizedMessage = response.data.result;
+      // const response = await axios.post("http://127.0.0.1:5000/getans", {
+      //   user_id: data.userId,
+      //   text: msg,
+      //   query_type:type,
+      // });
+      console.log(response);
+      const capitalizedMessage = response;
       console.log("Capitalized message:", capitalizedMessage);
       
       io.to(socket.id).emit("reply", { reply: capitalizedMessage });

@@ -7,7 +7,9 @@ const userRoutes=require('./routes/userRoutes')
 const productRoutes=require('./routes/productRoutes')
 const connectDB=require('./config/db');
 const cors = require('cors');
-const path=require('path')
+const path=require('path');
+const { getObjectId } = require('./controllers/productController');
+const { protect } = require('./middleware/authMiddleware');
 connectDB();
 const allowedOrigins = ['http://localhost:3000']; 
 app.use(cors());
@@ -18,6 +20,7 @@ app.use(cors());
 app.use(express.json());
 app.use('/api/user',userRoutes);
 app.use('/api/product',productRoutes);
+app.get('/api/getObjectId/:productid', getObjectId);
 app.use('/uploads', express.static('uploads'));
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {

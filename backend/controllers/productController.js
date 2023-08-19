@@ -136,5 +136,23 @@ const getProductById=expressAsyncHandler(async(req,res)=>{
       }
 
 })
+// productController.js
 
-module.exports={addProduct,viewAllProducts,findProductsByName,getProductById}
+
+const getObjectId = async (req, res) => {
+  const {productid} = req.params;
+  try {
+    const product = await Product.findOne({ productid: productid });
+
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    res.json({ objectId: product._id });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+module.exports={addProduct,viewAllProducts,findProductsByName,getProductById,getObjectId}
