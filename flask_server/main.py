@@ -50,6 +50,35 @@ def get_all_stored():
 hyb_emb_list,vit_emb_list,cleb_pics,celebs_to_products,df,user_df,item_df = get_all_stored()
 
 f = FullPipeline(hyb_emb_list,celebs_to_products,user_df,item_df,df, dense_clip_model, sparse_model, sparse_tokenizer,recom_model,vit_emb_list,vit_model,device)
+sample = {
+    "Body": {
+        "Accessory": "Closest matches are being shown",
+        "Bottomwear": "Closest matches are being shown",
+        "Budget lower limit": 0,
+        "Budget upper limit": 10000000.0,
+        "Footwear": "Closest matches are being shown",
+        "Gender": "Closest matches are being shown",
+        "Topwear": "Closest matches are being shown"
+    },
+    "Prods": {
+        "Accessories": [
+            604,
+            116,
+            307,
+            121
+        ],
+        "Clothing": [
+            661,
+            1506,
+            2198,
+            2929
+        ],
+        "Footwear": [
+            618,
+            1985
+        ]
+    }
+}
 
 app = Flask(__name__)
 CORS(app)
@@ -59,12 +88,20 @@ def capitalize_text():
         data = request.json
         input_text = data['text']
         query_type = data['query_type']
+        user_id = int(data['user_id'])
+
+        print("--------------------")
+        print("Input text: ", input_text)
+        print("Query type: ", query_type)
+        print("User id: ", user_id)
+
         # answer = chat_model(input_text)
         # answer = input_text.upper()
+
+
         if query_type == 'text':
-            final_ans = f(input_text,1)
+            final_ans = f(input_text,user_id)
         else:
-            # TODO: Add image processing
             final_ans = f.search_from_img(Image.open(urllib.request.urlopen(input_text)))
 
         return jsonify(final_ans), 200

@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 const ChatImage = ({ productid }) => {
+  console.log("-------->    ",productid);
   const navigate = useNavigate();
   const onClickHandler=()=>{
     navigate(`/product/${productid}`)

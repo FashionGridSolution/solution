@@ -191,7 +191,7 @@ const Chatpage = () => {
                         width={30}
                         height={30}
                       />
-                      <div className="received ml-2 p-3 "><JsonBodyFormatter jsonBody={message.text}/></div>
+                      <div className="received ml-2 p-3 ">{JSON.stringify(message.text)}</div>
                     </>
                   ) : (
                     <>

@@ -194,9 +194,8 @@ class ProdIds_from_image:
       if cat in part_images.keys():
         for x in part_images[cat]:
           suggested_prods[cat].extend(self.segmente_searcher(x,cat));
-          suggested_prods[cat] = list(set(suggested_prods[cat]))
+        
     suggested_prods["body"].extend(self.segmente_searcher(remove(query_img),'Clothing'));
-    suggested_prods["body"] = list(set(suggested_prods["body"]))
     return suggested_prods;
 
 
@@ -471,7 +470,7 @@ class FullPipeline:
       final_ans[temp[item_ind]].extend(lev2)
       item_ind+=1
 
-    return {'Body':str(sugg), 'Prods':final_ans}
+    return {'Body':sugg, 'Prods':final_ans}
 
   def search_from_img(self, img):
     prods = self.p(img.convert('RGB'))
@@ -481,7 +480,7 @@ class FullPipeline:
     'Footwear':[],
     'Accessories':[]
     }
-
+    print(prods.keys())
     for k in prods.keys():
       if k=='Clothing' or 'body':
         final_ans['Clothing'].extend([x['id'] for x in prods[k]])
@@ -490,4 +489,15 @@ class FullPipeline:
       else:
         final_ans['Accessories'].extend([x['id'] for x in prods[k]])
 
-    return {'Body':"Here you are!", 'Prods':final_ans}
+    for k in final_ans.keys():
+      final_ans[k] = list(set(final_ans[k]))
+
+    return {"Body": {
+        "Accessory": "Closest matches are being shown",
+        "Bottomwear": "Closest matches are being shown",
+        "Budget lower limit": 0,
+        "Budget upper limit": 10000000.0,
+        "Footwear": "Closest matches are being shown",
+        "Gender": "Closest matches are being shown",
+        "Topwear": "Closest matches are being shown"
+    }, 'Prods':final_ans}
