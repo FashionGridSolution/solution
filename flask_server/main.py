@@ -55,8 +55,12 @@ chat_model = ChatModel()
 def capitalize_text():
     try:
         data = request.json
+        print(data)
+        userId=  ""
         input_text = data['text']
+        # print("received"+userId+input_text)
         answer = chat_model(input_text)
+        answer="sample text"
         # answer = input_text.upper()
         urls = []
         return jsonify({'result': answer, 'urls':urls}), 200
