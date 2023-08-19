@@ -71,4 +71,13 @@
   .custom-file-upload input[type="file"] {
 	display: none;
   }
+
+  .sent-image {
+	max-width: 200px; /* Set a maximum width for the image */
+	border-radius: 8px; /* Add rounded corners */
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+	margin-left: auto; /* Push the image to the right side */
+	margin-right: 0;
+	display: block; /* Make sure the image takes up the entire width available */
+  }
   

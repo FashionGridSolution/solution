@@ -6,12 +6,12 @@ const ProductCard = (props) => {
   const navigate = useNavigate();
 
   const AddToCardHandler = async () => {
-    console.log(props.id);
+    console.log(props);
     try {
       const userInfo = JSON.parse(localStorage.getItem("userInfo"));
       const accessToken = userInfo.token; // Get the Bearer token from userInfo
       const { data } = await axios.post(
-        "/api/user/cart",
+        "http://127.0.0.1:8080/api/user/cart",
         { productId: props.id },
         {
           headers: {

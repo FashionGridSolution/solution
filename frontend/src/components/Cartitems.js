@@ -18,6 +18,7 @@ const Cartitems = () => {
         }
       );
       setCartItemList(data.items);
+      console.log(data.items)
     } catch (error) {
       console.error("Error:", error.message);
     }
@@ -40,22 +41,24 @@ const Cartitems = () => {
   useEffect(() => {
     
     getItems();
-    console.log(cartItemList);
+    
+    console.log(`Cartitemlist is ${cartItemList}`);
   }, []);
-  const removeProductHandler = async (product) => {
+  const removeProductHandler = async (productId) => {
     try {
+      console.log(productId);
       const userInfo = JSON.parse(localStorage.getItem("userInfo"));
       const accessToken = userInfo.token;
+      const headers = {
+        Authorization: `Bearer ${accessToken}`,
+      };
       await axios.delete(
-        ` http://127.0.0.1:8080/api/user/cart/${product._id}`,{},
+        ` http://127.0.0.1:8080/api/user/cart/${productId}`,
         {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
+          headers: headers
         }
       );
       getItems();
-      console.log("Product successfully deleted", product.name);
     } catch (error) {
       console.log(`Error occured ${error}`);
     }
@@ -126,13 +129,13 @@ const Cartitems = () => {
                     <div className="row main align-items-center">
                       <div className="col-2">
                         <img
-                          className="img-fluid"
-                          src="https://i.imgur.com/1GrakTl.jpg"
+                          className="img-thumbnail"
+                          src={item.product.images[0]}
                         />
                       </div>
                       <div className="col">
                         <div className="row text-muted">
-                          {item.product.brand}
+                          {item.brand }
                         </div>
                         <div className="row">{item.product.name}</div>
                       </div>
@@ -149,7 +152,7 @@ const Cartitems = () => {
                         <span
                           className="close"
                           type="button"
-                          onClick={() => removeProductHandler(item.product)}
+                          onClick={() => removeProductHandler(item.product._id)}
                         >
                           ✕
                         </span>

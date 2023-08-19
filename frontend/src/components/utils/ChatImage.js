@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 const ChatImage = ({ productid }) => {
+  console.log(`productid via chatimage is ${productid}`)
   const navigate = useNavigate();
   const onClickHandler=()=>{
     navigate(`/product/${productid}`)
@@ -47,7 +48,8 @@ const ChatImage = ({ productid }) => {
   }, [productid]);
 
   return (
-    <div className="card mb-2" style={{ width: "12rem", margin: "0 4px" }} >
+    // <div className="card mb-2" style={{ width: "12rem", margin: "0 4px" ,height:"400px"}} >
+      <div className="card mb-2" style={{ width: "12rem", height: "400px", margin: "0 4px" }}>
       <img
         src={
           product?.images[0] ||
@@ -55,6 +57,7 @@ const ChatImage = ({ productid }) => {
         }
         className="card-img-top"
         alt="..."
+        style={{ maxWidth: "100%", height: "auto" }}
       />
       <div className="card-body">
         <h5 className="card-title">

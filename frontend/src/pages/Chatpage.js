@@ -6,8 +6,6 @@ import Navbar from "../components/Navbar";
 import ChatImage from "../components/utils/ChatImage";
 import axios from "axios";
 
-
-
 const Chatpage = () => {
   const [imageInputKey, setImageInputKey] = useState(0); // Key to reset the input
   const [imageUploaded, setImageUploaded] = useState(false);
@@ -17,46 +15,72 @@ const Chatpage = () => {
   const [newMessage, setNewMessage] = useState("");
   const [socket, setSocket] = useState(null);
 
+
+
+  const AddToCardHandler = async (singleId) => {
+    try {
+      const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+      const accessToken = userInfo.token; // Get the Bearer token from userInfo
+      const { data } = await axios.post(
+        "http://127.0.0.1:8080/api/user/cart",
+        { productId: singleId },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      console.log(data);
+    } catch (error) {}
+  };
+
+
+  const addAllItemsToCart = async (allProductIds) => {
+    for (const productId of allProductIds) {
+      console.log("Adding product to cart:", productId);
+      await AddToCardHandler(productId);
+    }
+  };
   const handleImageUpload = async (e) => {
-    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     const userId = userInfo._id;
     const imageFile = e.target.files[0];
     if (!imageFile) return;
 
     const formData = new FormData();
-    formData.append('userId', userId);
-    formData.append('image',imageFile);
-    formData.append('type', 'image')
+    formData.append("userId", userId);
+    formData.append("image", imageFile);
+    formData.append("type", "image");
     try {
-      const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+      const userInfo = JSON.parse(localStorage.getItem("userInfo"));
       const accessToken = userInfo.token;
       const response = await axios.post(
-        'http://127.0.0.1:8080/upload', // Replace with your server's upload endpoint
+        "http://127.0.0.1:8080/upload", // Replace with your server's upload endpoint
         formData,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
-            'Content-Type': 'multipart/form-data'
-          }
+            "Content-Type": "multipart/form-data",
+          },
         }
       );
 
       if (response.data.imageUrl) {
         const imageUrl = response.data.imageUrl;
         // Emit the image message immediately
-        let messageData = { userId:userId, message: imageUrl,type:"image" };
-        await socket.emit('message', messageData);
+        let messageData = { userId: userId, message: imageUrl, type: "image" };
+        await socket.emit("message", messageData);
         // Update the uploadedImageUrl state
         setUploadedImageUrl(imageUrl);
         // Set imageUploaded to true
         setImageUploaded(true);
         setMessages((prevMessages) => [
           ...prevMessages,
-          { imageUrl, type: 'sent' }
+          { text: imageUrl, type: "image" },
         ]);
       }
     } catch (error) {
-      console.error('Error uploading image:', error);
+      console.error("Error uploading image:", error);
     }
   };
 
@@ -72,13 +96,13 @@ const Chatpage = () => {
     setSocket(newSocket);
     const getReply = async () => {
       await newSocket.on("reply", (data) => {
+        console.log(data);
         setMessages((prevMessages) => [
           ...prevMessages,
-          { text: data.reply, type: "received" },
+          { text: data.reply, type: "received", productids: data.productids },
         ]);
         chatContainerRef.current.scrollTop =
           chatContainerRef.current.scrollHeight;
-        console.log(data.reply);
       });
     };
 
@@ -87,20 +111,19 @@ const Chatpage = () => {
       newSocket.disconnect();
     };
   }, []);
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (socket && (newMessage.trim() !== "")) {
-      const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+    if (socket && newMessage.trim() !== "") {
+      const userInfo = JSON.parse(localStorage.getItem("userInfo"));
       const userId = userInfo._id;
-  
-      let messageData = { userId:userId, message: newMessage,type:"text" };
-  
-     
-      // console.log(`Message data is ${messageData.userId} and ${messageData.message} and ${messageData.imageUrl} and ${messageData._id} and ${messageData.createdAt} `)
-      await socket.emit('message', messageData);
 
-      setNewMessage('');
+      let messageData = { userId: userId, message: newMessage, type: "text" };
+
+      // console.log(`Message data is ${messageData.userId} and ${messageData.message} and ${messageData.imageUrl} and ${messageData._id} and ${messageData.createdAt} `)
+      await socket.emit("message", messageData);
+
+      setNewMessage("");
       setMessages((prevMessages) => [
         ...prevMessages,
         { text: newMessage, type: "sent" },
@@ -128,22 +151,15 @@ const Chatpage = () => {
             <i className="fas fa-times" />
           </div>
           <div className="flex-grow-1 overflow-auto">
-            <div className={` d-flex flex-row p-3 message `}>
-              <div>
-                <img
-                  src="https://img.icons8.com/color/48/000000/circled-user-male-skin-type-7.png"
-                  width={30}
-                  height={30}
-                />
-                <div className="received ml-2 p-3 ">sample msg</div>
-              </div>
-            </div>
-
             {messages.map((message, index) => (
               <>
                 <div key={index} className={` d-flex flex-row p-3 message `}>
                   {message.type === "received" ? (
                     <>
+                      <div
+                        key={index}
+                        className={` d-flex flex-row p-3 message `}
+                      ></div>
                       <img
                         src="https://img.icons8.com/color/48/000000/circled-user-male-skin-type-7.png"
                         width={30}
@@ -153,9 +169,17 @@ const Chatpage = () => {
                     </>
                   ) : (
                     <>
-                      <div className="sent bg-white bg-white-chat mr-2 p-3 ml-auto ">
-                        {message.text}
-                      </div>
+                      {message.type === "image" ? (
+                        <img
+                          src={message.text} // Assuming the imageUrl is available in the message object
+                          alt="Sent Image"
+                          className="sent-image"
+                        />
+                      ) : (
+                        <div className="sent bg-white bg-white-chat mr-2 p-3 ml-auto ">
+                          {message.text}
+                        </div>
+                      )}
                       <img
                         src="https://img.icons8.com/color/48/000000/circled-user-male-skin-type-7.png"
                         width={30}
@@ -164,16 +188,29 @@ const Chatpage = () => {
                     </>
                   )}
                 </div>
-                {message.type === "received" ? (
-                <div className="row d-flex ml-4" style={{ maxWidth: "80%" }}>
-                  <ChatImage productid="64d94566e9bc8bdead87754c" />
-                  <ChatImage />
-                  <ChatImage />
-                  <ChatImage />
-                  <ChatImage />
-                  <ChatImage />
-                  <ChatImage />
-                </div> ):(<></>)}
+                {message.type === "received" &&
+                message.productids &&
+                message.productids.length > 0 ? (
+                  <div className="row d-flex ml-4" style={{ maxWidth: "80%" }}>
+                    {message.productids.map((productid) => (
+                      <ChatImage productid={productid} />
+                    ))}
+                  </div>
+                ) : (
+                  <></>
+                )}
+                {message.type === "received" &&
+                message.productids &&
+                message.productids.length > 0 ? (
+                  <div className="ml-4">
+                    <button
+                      className="btn btn-primary"
+                      onClick={()=>addAllItemsToCart(message.productids)}
+                    >
+                      Add All Items to Cart
+                    </button>
+                  </div>
+                ) : null}
               </>
             ))}
           </div>
@@ -187,17 +224,20 @@ const Chatpage = () => {
                 onChange={(e) => setNewMessage(e.target.value)}
                 placeholder="Type your message..."
               />
-              <label htmlFor="imageInput" className="btn btn-primary custom-file-upload">
-  <span>Search via image</span>
-  <input
-    type="file"
-    accept="image/*"
-    id="imageInput"
-    name="image"
-    onChange={handleImageUpload}
-    key={imageInputKey}
-  />
-</label>
+              <label
+                htmlFor="imageInput"
+                className="btn btn-primary custom-file-upload"
+              >
+                <span>Search via image</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  id="imageInput"
+                  name="image"
+                  onChange={handleImageUpload}
+                  key={imageInputKey}
+                />
+              </label>
               <button type="submit" className="btn btn-primary ml-2">
                 Send
               </button>

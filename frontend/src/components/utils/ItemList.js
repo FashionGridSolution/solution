@@ -34,7 +34,7 @@ const ItemList = ({ currentPage, products, setProducts }) => {
       }
     };
     getItems();
-  }, [currentPage, products]);
+  }, [currentPage]);
 
   // Calculate the index range of products to display for the current page
   const indexOfLastItem = currentPage * itemsPerPage;

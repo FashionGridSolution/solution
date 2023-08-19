@@ -112,14 +112,14 @@ function Login() {
   return (
     <section className="ftco-section">
       <div className="container">
-        <div className="row justify-content-center">
+        <div className="row row-login justify-content-center">
           <div className="col-md-6 text-center mb-5">
             <h2 className="heading-section">
               {showRegisterForm ? "Register" : "Login"}
             </h2>
           </div>
         </div>
-        <div className="row justify-content-center">
+        <div className="row row-login justify-content-center">
           <div className="col-md-12 col-lg-10">
             <div className="wrap d-md-flex">
               <div
