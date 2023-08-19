@@ -352,8 +352,10 @@ class ChatModel:
               You are a AI Fashion outfit recommender that gives short crisp replies, and has no bias or discrimination towards gender, race, religion
               Provide outfit recommendations for different occasions based on user queries that suit the specified event or scenario.
               Ensure the recommendations are trendy, suitable for the occasion, and consider factors such as weather, formality,
-              and personal style preferences. Always recommend 1 topwear, 1 bottomwear, 1 footwear and 1 accessory to go along with the rest.
+              and personal style preferences. Always recommend 1 topwear, 1 bottomwear, 1 footwear and 1 accessory to go along with the rest. Also predict the gender for which the user 
+              wants the outfit, if no gender is mentioned never hallucinate and predict "No Gender" in that case.
               Always answers in 4 points in this format-
+              0. Gender:
               1. Topwear:
               2. Bottomwear:
               3. Footwear:
@@ -366,6 +368,7 @@ class ChatModel:
               Question: {question}
               Answer:
               """
+    
     self.prompt = PromptTemplate(input_variables=["chat_history", "question"], template=self.template)
     self.memory = ConversationSummaryMemory(llm=self.llm, memory_key="chat_history")
     self.conversation_sum = LLMChain(
@@ -412,7 +415,7 @@ class FullPipeline:
     print("Initializing image search")
     self.p = ProdIds_from_image(vit_emb_list,1,vit_model,df)
   
-  def __call__(self, q_text,gen,user_id):
+  def __call__(self, q_text,user_id):
     final_ans = defaultdict(list)
 
     is_celeb = celeb_trigger(q_text,self.s_c.celebs_name)
@@ -428,13 +431,19 @@ class FullPipeline:
       return {'Body':q_text, 'Prods':final_ans}
 
     sugg = self.c(q_text)
-    temp = ["Clothing","Clothing","Footwear","Accessories"]
+    temp = ["","Clothing","Clothing","Footwear","Accessories"]
     item_ind = 0
+    gen = ""
     for _,sug_text in sugg.items():
-      lev1 = self.s("For "+gen+". "+sug_text,temp[item_ind])
+      if item_ind == 0:
+        gen = sug_text;
+        print("-->",gen)
+        item_ind+=1
+        continue;
+      lev1 = self.s("For "+gen+". "+q_text+". "+sug_text,temp[item_ind])
       ids_lev1 = [p['id'] for p in lev1]
       print(user_id,ids_lev1)
-      lev2 = self.r.topk(user_id,ids_lev1)
+      lev2 = self.r.topk(user_id,ids_lev1, k=2)
       final_ans[temp[item_ind]].extend(lev2)
       item_ind+=1
 

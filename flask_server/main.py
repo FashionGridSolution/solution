@@ -62,7 +62,7 @@ def capitalize_text():
         # answer = chat_model(input_text)
         # answer = input_text.upper()
         if query_type == 'text':
-            final_ans = f(input_text,"",1)
+            final_ans = f(input_text,1)
         else:
             # TODO: Add image processing
             final_ans = f.search_from_img(Image.open(urllib.request.urlopen(input_text)))
