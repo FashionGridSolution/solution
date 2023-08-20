@@ -194,9 +194,25 @@ const Chatpage = () => {
                       <div className="received ml-2 p-3 ">
                       <div className="formatted-json-container">
                       <pre>
-    {Object.entries(JSON.parse(message.text.replace(/'/g, '"')))
-      .map(([key, value]) => `${key.replace(/^\d+\.\s*/, '')} - ${value}`).slice(1, -2)
-      .join('\n')}
+                      {(() => {
+                              const newdata=JSON.stringify(message.text)
+                              console.log(`Here  `+newdata)
+                              const parsedData = JSON.parse(
+                                newdata.replace(/'/g, '"')
+                              );
+                              console.log("parsedData:", parsedData); // Debug output
+
+                              const formattedOutput = Object.entries(parsedData)
+                                .map(
+                                  ([key, value]) =>
+                                    `${key.replace(/^\d+\.\s*/, "")} - ${value}`
+                                )
+                                .join("\n");
+
+                              console.log("formattedOutput:", formattedOutput); // Debug output
+
+                              return formattedOutput;
+                            })()}
   </pre>
 </div>
                       </div>
