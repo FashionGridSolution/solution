@@ -48,13 +48,14 @@ io.on("connection", (socket) => {
     // Process the message, e.g., send a reply back
     const msg = data.message;
     const type=data.type;
-    const testing = `Received message from User ${data.userId}: ${data.message}`;
-    console.log(testing);
-    
+    // const newuserId=data.userId;
+    console.log("er")
+    console.log(data)
+    const newuserid=data.userId;
     try {
       console.log("+++++++++++++++++Herre++++++++++++++");
       const response = await axios.post("http://127.0.0.1:5000/getans", {
-        user_id: 1,
+        user_id: newuserid,
         text: msg,
         query_type:type,
       });

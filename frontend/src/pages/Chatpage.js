@@ -143,9 +143,8 @@ const Chatpage = () => {
     if (socket && newMessage.trim() !== "") {
       const userInfo = JSON.parse(localStorage.getItem("userInfo"));
       const userId = userInfo._id;
-
-      let messageData = { userId: userId, message: newMessage, type: "text" };
-
+      const newuserId=await axios.get(`http://127.0.0.1:8080/api/user/getUserId/${userId}`)
+      let messageData = { userId: newuserId.data.userID, message: newMessage, type: "text" };
       // console.log(`Message data is ${messageData.userId} and ${messageData.message} and ${messageData.imageUrl} and ${messageData._id} and ${messageData.createdAt} `)
       await socket.emit("message", messageData);
 
