@@ -84,6 +84,19 @@ const allUsers = expressAsyncHandler(async (req, res) => {
     const users = await User.find(keyword).find();
     res.send(users);
 })
+const getUserIdController = async (req, res) => {
+    try {
+      const data = await User.findById(req.params.id).select('userID'); // Assuming your User model has a field named 'userId'
+  
+      if (!data) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      res.status(200).json({userID:data.userID});
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  };
 
-
-module.exports = { registerUser, authUser, allUsers};
+module.exports = { registerUser, authUser, allUsers,getUserIdController};

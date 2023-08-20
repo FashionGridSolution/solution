@@ -24,22 +24,24 @@ const userSchema=mongoose.Schema(
             default:false,
         },
         userInteractions:[{type:mongoose.Schema.Types.ObjectId,ref:'UserInteraction'}],
-        cartId:{type:mongoose.Schema.Types.ObjectId,ref:'Cart'}
+        cartId:{type:mongoose.Schema.Types.ObjectId,ref:'Cart'},
+        userID:"Number"
     },
     {timestamps:true}
 )
 
 userSchema.methods.matchPassword=async function(enteredPassword){
-    return await bcrypt.compare(enteredPassword,this.password);
+    return (enteredPassword===this.password);
+    // return await bcrypt.compare(enteredPassword,this.password);
 }
-userSchema.pre("save", async function (next) {
-    if (!this.isModified) {
-      next();
-    }
+// userSchema.pre("save", async function (next) {
+//     if (!this.isModified) {
+//       next();
+//     }
   
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-  });
+//     const salt = await bcrypt.genSalt(10);
+//     this.password = await bcrypt.hash(this.password, salt);
+//   });
 
 const User=mongoose.model("User",userSchema);
 module.exports=User;
