@@ -103,7 +103,12 @@ def capitalize_text():
             final_ans = f(input_text,user_id)
         else:
             final_ans = f.search_from_img(Image.open(urllib.request.urlopen(input_text)))
-
+        
+        # final_ans = sample
+        final_ans['Body'] = {key: value for key, value in final_ans['Body'].items() if key not in ['Gender','Budget lower limit','Budget upper limit']}
+        print("---------------------")
+        print("Final answer: ", final_ans)
+        print("---------------------")
         return jsonify(final_ans), 200
     
     except Exception as e:
@@ -113,6 +118,9 @@ def capitalize_text():
 if __name__=="__main__":
     print("Starting Flask Server")
     app.run(debug=False, port=5000)
+    # final_ans = f("Diwali outfit for man",1)
+    # print(final_ans)
+    # print("Done")
     # print("Staring pipeline. ...") 
     # suggestion = f("Suggest me Interview outfit for men","Male",1)
     # print(suggestion)

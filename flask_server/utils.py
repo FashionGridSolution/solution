@@ -1,5 +1,6 @@
 from common_utils import *
 
+
 class Img_embedder:
   def __init__(self):
     vit_model_id = "google/vit-base-patch16-224"
@@ -25,6 +26,18 @@ class SparseModel:
     dim=1)[0].squeeze();
     return vec
   
+def get_current_season():
+    now = datetime.datetime.now()
+    month = now.month
+
+    if 3 <= month <= 5:
+        return "Spring"
+    elif 6 <= month <= 8:
+        return "Summer"
+    elif 9 <= month <= 11:
+        return "Fall"
+    else:
+        return "Winter"
 
 def resize_image_with_aspect_ratio(img, new_width):
     # Calculate the new height while maintaining the aspect ratio
@@ -336,6 +349,11 @@ class Recommender:
     user_id = int(user_id)
     user_emb = self.user_df[self.user_df['userID'] == user_id]['embeddings'].tolist()
     prod_emb = self.item_df[self.item_df['uniq_id'].isin(prod_id_list)]['embeddings'].tolist()
+    
+    prod_emb = np.array(prod_emb)
+    prod_emb[np.where(prod_emb==None)]=0
+    prod_emb = prod_emb.tolist()
+
     user_emb = user_emb * len(prod_emb)
     scores = self.model((tf.convert_to_tensor(user_emb), tf.convert_to_tensor(prod_emb)))
     result = scores*4+1
@@ -359,15 +377,16 @@ class ChatModel:
               You are a AI Fashion outfit recommender that gives short crisp replies, and has no bias or discrimination towards gender, race, religion
               Provide outfit recommendations for different occasions based on user queries that suit the specified event or scenario.
               Ensure the recommendations are trendy, suitable for the occasion, and consider factors such as weather, formality,
-              and personal style preferences. Always recommend 1 topwear, 1 bottomwear, 1 footwear and 1 accessory to go along with the rest. Also predict the gender for which the user
-              wants the outfit, if no gender is mentioned never hallucinate and predict "No Gender" in that case. You should also predict the budget range the user wants,
+              and personal style preferences. Always recommend 1 topwear, 1 bottomwear, 1 footwear and 1 accessory to go along with the rest, mention description along with color, pattern for each item. 
+              Also predict the gender for which the user wants the outfit, if no gender is mentioned never hallucinate and 
+              predict "No Gender" in that case. You should also predict the budget range the user wants,
               distinguish between the upper and lower budget limits, never hallucinate and predict "No Limit" for that limit for whichever of the 2 limits is not present.
               Always answers in 4 points in this format-
-              0. Gender: Product description along with color, pattern etc.
-              1. Topwear: Product description along with color, pattern etc.
-              2. Bottomwear: Product description along with color, pattern etc.
-              3. Footwear: Product description along with color, pattern etc.
-              4. Accessory: Product description along with color, pattern etc.
+              0. Gender:
+              1. Topwear:
+              2. Bottomwear: 
+              3. Footwear: 
+              4. Accessory: 
               5. Budget lower limit:
               6. Budget upper limit:
 
@@ -465,12 +484,14 @@ class FullPipeline:
     temp = ["","Clothing","Clothing","Footwear","Accessories"]
     item_ind = 0
     gen = ""
+    print(sugg_values)
     for sug_text in sugg_values:
       if item_ind == 0:
         item_ind+=1
         gen = sug_text;
         print("-->",gen)
         continue;
+      print(sug_text)
       lev1 = self.s("For "+gen+". "+sug_text,temp[item_ind],lower,upper)
       ids_lev1 = [p['id'] for p in lev1]
       print(user_id,ids_lev1)
