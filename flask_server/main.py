@@ -49,7 +49,9 @@ def get_all_stored():
 
 hyb_emb_list,vit_emb_list,cleb_pics,celebs_to_products,df,user_df,item_df = get_all_stored()
 
-f = FullPipeline(hyb_emb_list,celebs_to_products,user_df,item_df,df, dense_clip_model, sparse_model, sparse_tokenizer,recom_model,vit_emb_list,vit_model,device)
+# f = FullPipeline(hyb_emb_list,celebs_to_products,user_df,item_df,df, dense_clip_model, sparse_model, sparse_tokenizer,recom_model,vit_emb_list,vit_model,device)
+full_pipeline_sessions = {}
+
 sample = {
     "Body": {
         "Accessory": "Closest matches are being shown",
@@ -95,10 +97,14 @@ def capitalize_text():
         print("Query type: ", query_type)
         print("User id: ", user_id)
 
+        if user_id not in full_pipeline_sessions:
+            print("Creating new session for user: ", user_id)
+            full_pipeline_sessions[user_id] = FullPipeline(hyb_emb_list,celebs_to_products,user_df,item_df,df, dense_clip_model, sparse_model, sparse_tokenizer,recom_model,vit_emb_list,vit_model,device)
+
         # answer = chat_model(input_text)
         # answer = input_text.upper()
 
-
+        f = full_pipeline_sessions[user_id]
         if query_type == 'text':
             final_ans = f(input_text,user_id)
         else:
