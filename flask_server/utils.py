@@ -363,11 +363,11 @@ class ChatModel:
               wants the outfit, if no gender is mentioned never hallucinate and predict "No Gender" in that case. You should also predict the budget range the user wants,
               distinguish between the upper and lower budget limits, never hallucinate and predict "No Limit" for that limit for whichever of the 2 limits is not present.
               Always answers in 4 points in this format-
-              0. Gender:
-              1. Topwear:
-              2. Bottomwear:
-              3. Footwear:
-              4. Accessory:
+              0. Gender: Product description along with color, pattern etc.
+              1. Topwear: Product description along with color, pattern etc.
+              2. Bottomwear: Product description along with color, pattern etc.
+              3. Footwear: Product description along with color, pattern etc.
+              4. Accessory: Product description along with color, pattern etc.
               5. Budget lower limit:
               6. Budget upper limit:
 
@@ -447,7 +447,15 @@ class FullPipeline:
         else:
           final_ans[cat].extend(cur_prod_ids)
       
-      return {'Body':q_text, 'Prods':final_ans}
+      return {"Body": {
+        "Accessory": "Closest matches are being shown",
+        "Bottomwear": "Closest matches are being shown",
+        "Budget lower limit": 0,
+        "Budget upper limit": 10000000.0,
+        "Footwear": "Closest matches are being shown",
+        "Gender": "Closest matches are being shown",
+        "Topwear": "Closest matches are being shown"
+      }, 'Prods':final_ans}
 
     sugg = self.c(q_text)
     sugg_values = [x[1] for x in sugg.items()]
