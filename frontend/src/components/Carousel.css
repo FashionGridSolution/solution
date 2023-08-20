@@ -1,0 +1,37 @@
+.carousel-img {
+    opacity: 0.8; /* Adjust the opacity as needed */
+  }
+  
+  .carousel-caption-content {
+    background-color: white;
+    padding: 20px;
+    text-align: center;
+    
+  }
+  
+.carousel-caption-content h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  
+.carousel-caption-content p {
+    font-size: 16px;
+    margin-bottom: 0;
+  }
+.carousel-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  
+.carousel-caption-f {
+    background-color: rgba(255, 255, 255, 0.7);
+    padding: 20px;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    transform: translateY(50%);
+  }
+

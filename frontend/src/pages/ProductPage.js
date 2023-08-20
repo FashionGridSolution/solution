@@ -88,7 +88,9 @@ const ProductPage = (props) => {
                 {product.images?.map((image, index) => (
                   <div
                     key={index}
-                    className={`carousel-item fixed-height-image ${index === 0 ? "active" : ""}`}
+                    className={`carousel-item fixed-height-image ${
+                      index === 0 ? "active" : ""
+                    }`}
                   >
                     <img
                       src={image}
