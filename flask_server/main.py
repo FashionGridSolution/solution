@@ -111,7 +111,8 @@ def capitalize_text():
             final_ans = f.search_from_img(Image.open(urllib.request.urlopen(input_text)))
         
         # final_ans = sample
-        final_ans['Body'] = {key: value for key, value in final_ans['Body'].items() if key not in ['Gender','Budget lower limit','Budget upper limit']}
+
+        final_ans['Body'] = {key: value for key, value in final_ans['Body'].items() if 'Gender' not in key and 'Budget lower limit' not in key and 'Budget upper limit' not in key}
         print("---------------------")
         print("Final answer: ", final_ans)
         print("---------------------")
