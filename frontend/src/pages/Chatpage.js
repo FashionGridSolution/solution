@@ -16,8 +16,6 @@ const Chatpage = () => {
   const [newMessage, setNewMessage] = useState("");
   const [socket, setSocket] = useState(null);
 
-
-
   const AddToCardHandler = async (singleId) => {
     try {
       const userInfo = JSON.parse(localStorage.getItem("userInfo"));
@@ -34,7 +32,6 @@ const Chatpage = () => {
       console.log(data);
     } catch (error) {}
   };
-
 
   const addAllItemsToCart = async (allProductIds) => {
     for (const productId of allProductIds) {
@@ -98,7 +95,7 @@ const Chatpage = () => {
     const getReply = async () => {
       const userInfo = JSON.parse(localStorage.getItem("userInfo"));
       const accessToken = userInfo.token;
-      newSocket.on("reply", async(data) => {
+      newSocket.on("reply", async (data) => {
         console.log(`Data received is `);
         console.log(data);
         const allProductIds = Object.values(data.reply.Prods).flat();
@@ -113,7 +110,6 @@ const Chatpage = () => {
                     Authorization: `Bearer ${accessToken}`,
                   },
                 }
-
               );
               return response.data.objectId; // Modify based on your response structure
             } catch (error) {
@@ -125,7 +121,11 @@ const Chatpage = () => {
         console.log("Modified product IDs:", modifiedProductIds);
         setMessages((prevMessages) => [
           ...prevMessages,
-          { text: data.reply.Body, type: "received", productids: modifiedProductIds },
+          {
+            text: data.reply.Body,
+            type: "received",
+            productids: modifiedProductIds,
+          },
         ]);
         chatContainerRef.current.scrollTop =
           chatContainerRef.current.scrollHeight;
@@ -191,7 +191,15 @@ const Chatpage = () => {
                         width={30}
                         height={30}
                       />
-                      <div className="received ml-2 p-3 ">{JSON.stringify(message.text)}</div>
+                      <div className="received ml-2 p-3 ">
+                      <div className="formatted-json-container">
+                      <pre>
+    {Object.entries(JSON.parse(message.text.replace(/'/g, '"')))
+      .map(([key, value]) => `${key.replace(/^\d+\.\s*/, '')} - ${value}`).slice(1, -2)
+      .join('\n')}
+  </pre>
+</div>
+                      </div>
                     </>
                   ) : (
                     <>
@@ -231,7 +239,7 @@ const Chatpage = () => {
                   <div className="ml-4">
                     <button
                       className="btn btn-primary"
-                      onClick={()=>addAllItemsToCart(message.productids)}
+                      onClick={() => addAllItemsToCart(message.productids)}
                     >
                       Add All Items to Cart
                     </button>

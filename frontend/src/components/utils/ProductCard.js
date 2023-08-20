@@ -2,6 +2,7 @@ import React from "react";
 import "./ProductCard.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useEffect } from "react";
 const ProductCard = (props) => {
   const navigate = useNavigate();
 
@@ -23,8 +24,8 @@ const ProductCard = (props) => {
     } catch (error) {}
   };
   return (
-    <div className="col-md-4 my-2" style={{maxWidth:"200px"}}>
-      <div className="card">
+    <div className="col-md-4 my-2" style={{ maxWidth: "200px" }}>
+      <div className="card  h-100">
         <div className="image-container">
           <div className="first">
             <div className="d-flex justify-content-between align-items-center">
@@ -36,10 +37,9 @@ const ProductCard = (props) => {
           {/* Insert caraousel here */}
 
           <div
-            id={`carouselExampleControls${props.id}`}
             className="carousel slide"
-            data-ride="carousel"
-            data-interval="false"
+            data-bs-ride="carousel"
+            id={`carouselExample-${props.id}`}
           >
             <div className="carousel-inner">
               {props.images?.map((image, index) => (
@@ -48,34 +48,40 @@ const ProductCard = (props) => {
                   className={`carousel-item ${index === 0 ? "active" : ""}`}
                 >
                   <img
-                    className="d-block w-100 tmb_pic"
                     src={image}
+                    className="d-block w-100 tmb_pic"
                     alt={`Slide ${index + 1}`}
                   />
                 </div>
               ))}
             </div>
-            <a
+            <button
               className="carousel-control-prev"
-              href={`#carouselExampleControls${props.id}`}
-              role="button"
-              data-slide="prev"
+              type="button"
+              data-bs-target={`#carouselExample-${props.id}`}
+              data-bs-slide="prev"
             >
-              <span className="carousel-control-prev-icon" aria-hidden="true" />
-              <span className="sr-only">Previous</span>
-            </a>
-            <a
+              <span
+                className="carousel-control-prev-icon"
+                aria-hidden="true"
+              ></span>
+              <span className="visually-hidden">Previous</span>
+            </button>
+            <button
               className="carousel-control-next"
-              href={`#carouselExampleControls${props.id}`}
-              role="button"
-              data-slide="next"
+              type="button"
+              data-bs-target={`#carouselExample-${props.id}`}
+              data-bs-slide="next"
             >
-              <span className="carousel-control-next-icon" aria-hidden="true" />
-              <span className="sr-only">Next</span>
-            </a>
+              <span
+                className="carousel-control-next-icon"
+                aria-hidden="true"
+              ></span>
+              <span className="visually-hidden">Next</span>
+            </button>
           </div>
         </div>
-        <div className="product-detail-container p-2 text-center">
+        <div className="product-detail-container p-2 text-center h-100 mt-auto  d-flex flex-column">
           <p>
             <a
               href={`/product/${props.id}`}
@@ -112,7 +118,7 @@ const ProductCard = (props) => {
               {props.category_main}
             </div> */}
           </div>
-          <div className="d-flex justify-content-between align-items-center pt-1">
+          <div className="d-flex justify-content-between align-items-center pt-1 mt-auto">
             <div>
               <i className="fa fa-star-o rating-star" />
               <span className="rating-number">{props.brand}</span>

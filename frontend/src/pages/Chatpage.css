@@ -80,4 +80,18 @@
 	margin-right: 0;
 	display: block; /* Make sure the image takes up the entire width available */
   }
+  .formatted-json-container {
+	border-radius: 5px;
+	padding: 10px;
+	max-width: 600px;
+	overflow: auto;
+  }
+  
+  .formatted-json-container pre {
+	white-space: pre-wrap;
+	font-family: Consolas, monospace;
+	font-size: 14px;
+	line-height: 1.5;
+	margin: 0;
+  }
   
