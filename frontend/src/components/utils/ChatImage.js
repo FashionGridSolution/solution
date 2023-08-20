@@ -51,7 +51,7 @@ const ChatImage = ({ productid }) => {
       <img
         src={
           product?.images[0] ||
-          "https://assetscdn1.paytm.com/images/catalog/product/K/KI/KIDTORADO-MUSCUTORA65799297FD22C/1564571511644_0.jpg"
+          "https://yt3.googleusercontent.com/cT40lDWqE99Ch52R3ftuAExjmjF-yZiY5rUSv_0Q3NXhcqzmiax8ReXuS4Qe53Fizcaw4hEX=s900-c-k-c0x00ffffff-no-rj"
         }
         className="card-img-top"
         alt="..."
