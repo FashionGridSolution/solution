@@ -440,7 +440,7 @@ class ChatModel:
 
 
 class FullPipeline:
-  def __init__(self,hyb_emb_list,celebs_to_products,user_df,item_df,df,dense_clip_model, sparse_model, sparse_tokenizer,recom_model,vit_emb_list,vit_model,device):
+  def __init__(self,hyb_emb_list,celebs_to_products,user_df,item_df,df,udf,dense_clip_model, sparse_model, sparse_tokenizer,recom_model,vit_emb_list,vit_model,device,uid):
     print("Loading models")
     print("Initializing similarity search")
     self.s = Similarity_search(hyb_emb_list,df, dense_clip_model, sparse_model, sparse_tokenizer,device,k=4)
@@ -452,6 +452,8 @@ class FullPipeline:
     self.c = ChatModel()
     print("Initializing image search")
     self.p = ProdIds_from_image(vit_emb_list,1,vit_model,df)
+    self.u_genders = {int(row['userID']):"Male" if row['gender']=='M' else "Female" for _,row in udf.iterrows()}
+    self.uid = uid
   
   def __call__(self, q_text,user_id):
     final_ans = defaultdict(list)
@@ -490,6 +492,9 @@ class FullPipeline:
         item_ind+=1
         gen = sug_text;
         print("-->",gen)
+        if "no" in gen.lower() or "uni" in gen.lower():
+           gen = self.u_genders[self.uid]
+           print("Personalized -> ",gen)
         continue;
       print(sug_text)
       lev1 = self.s("For "+gen+". "+sug_text,temp[item_ind],lower,upper)

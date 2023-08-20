@@ -44,12 +44,13 @@ def get_all_stored():
   df = pd.read_csv(all_data_path)
   user_df = pd.read_json(usr_emb_path, orient='records')
   item_df = pd.read_json(item_emb_path, orient='records')
+  all_user_df = pd.read_csv('../stored_result/User.csv')
 
-  return hyb_emb_list,vit_emb_list,cleb_pics,celebs_to_products,df,user_df,item_df
+  return hyb_emb_list,vit_emb_list,cleb_pics,celebs_to_products,df,user_df,item_df,all_user_df
 
-hyb_emb_list,vit_emb_list,cleb_pics,celebs_to_products,df,user_df,item_df = get_all_stored()
+hyb_emb_list,vit_emb_list,cleb_pics,celebs_to_products,df,user_df,item_df,all_user_df = get_all_stored()
 
-# f = FullPipeline(hyb_emb_list,celebs_to_products,user_df,item_df,df, dense_clip_model, sparse_model, sparse_tokenizer,recom_model,vit_emb_list,vit_model,device)
+fg = FullPipeline(hyb_emb_list,celebs_to_products,user_df,item_df,df,all_user_df, dense_clip_model, sparse_model, sparse_tokenizer,recom_model,vit_emb_list,vit_model,device, 1)
 full_pipeline_sessions = {}
 
 sample = {
@@ -99,7 +100,7 @@ def capitalize_text():
 
         if user_id not in full_pipeline_sessions:
             print("Creating new session for user: ", user_id)
-            full_pipeline_sessions[user_id] = FullPipeline(hyb_emb_list,celebs_to_products,user_df,item_df,df, dense_clip_model, sparse_model, sparse_tokenizer,recom_model,vit_emb_list,vit_model,device)
+            full_pipeline_sessions[user_id] = FullPipeline(hyb_emb_list,celebs_to_products,user_df,item_df,df,all_user_df, dense_clip_model, sparse_model, sparse_tokenizer,recom_model,vit_emb_list,vit_model,device, user_id)
 
         # answer = chat_model(input_text)
         # answer = input_text.upper()
@@ -125,7 +126,7 @@ def capitalize_text():
 if __name__=="__main__":
     print("Starting Flask Server")
     app.run(debug=False, port=5000)
-    # final_ans = f("Diwali outfit for man",1)
+    # final_ans = fg("Diwali outfit for me",1)
     # print(final_ans)
     # print("Done")
     # print("Staring pipeline. ...") 
